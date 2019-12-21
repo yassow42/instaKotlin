@@ -5,6 +5,8 @@ import android.os.Bundle
 import com.creativeoffice.instakotlin.R
 import com.creativeoffice.utils.BottomnavigationViewHelper
 import com.creativeoffice.utils.HomePagerAdapter
+import com.creativeoffice.utils.UniversalImageLoader
+import com.nostra13.universalimageloader.core.ImageLoader
 import kotlinx.android.synthetic.main.activity_home.*
 
 class HomeActivity : AppCompatActivity() {
@@ -19,7 +21,7 @@ class HomeActivity : AppCompatActivity() {
 
         setupNavigationView()
         setupHomeViewPager()
-
+        initImageLoader()
 
     }
 
@@ -53,5 +55,13 @@ class HomeActivity : AppCompatActivity() {
         homeViewPager.setCurrentItem(1)  // Bu pagerda id = 1 olanı ılk olarak aç
 
     }
+
+
+    private fun initImageLoader() {
+
+        var universalImageLoader = UniversalImageLoader(this)
+        ImageLoader.getInstance().init(universalImageLoader.config)
+    }
+
 
 }
