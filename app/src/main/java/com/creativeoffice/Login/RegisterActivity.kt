@@ -6,19 +6,22 @@ import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
 import android.view.View
-import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentManager
 import com.creativeoffice.instakotlin.R
 import com.creativeoffice.utils.EventbusDataEvents
 import kotlinx.android.synthetic.main.activity_register.*
 import org.greenrobot.eventbus.EventBus
 
-class RegisterActivity : AppCompatActivity() {
+class RegisterActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedListener {
 
+   lateinit var manager : FragmentManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
+        manager = supportFragmentManager
+        manager.addOnBackStackChangedListener(this)
         init()
     }
 
@@ -109,9 +112,7 @@ class RegisterActivity : AppCompatActivity() {
                 loginRoot.visibility = View.GONE
                 loginContainer.visibility = View.VISIBLE
 
-
                 val transaction = supportFragmentManager.beginTransaction()
-
                 transaction.replace(R.id.loginContainer, TelefonKoduGirFragment())
                 transaction.addToBackStack("TelefonKodu")
                 transaction.commit()
@@ -125,10 +126,8 @@ class RegisterActivity : AppCompatActivity() {
                 loginRoot.visibility = View.GONE
                 loginContainer.visibility = View.VISIBLE
 
-
                 val transaction = supportFragmentManager.beginTransaction()
-
-                transaction.replace(R.id.loginContainer, EmailGirisYontemiFragment())
+                transaction.replace(R.id.loginContainer, KayitFragment())
                 transaction.addToBackStack("Email Giris ")
                 transaction.commit()
 
@@ -142,9 +141,18 @@ class RegisterActivity : AppCompatActivity() {
 
     }
 
-    override fun onBackPressed() {
-        loginRoot.visibility = View.VISIBLE
 
-        super.onBackPressed()
+
+    override fun onBackStackChanged() {// fragmentlerde geri nasıl gelebılırz duzgunce bunu kullanmalıyız. ilk olarak lateinit manager tanımladık daha sonra oncreat içinde cagırdık
+        // metodu acıp kullanıyruz . tek tek geri gelirken sayıyor eger. sıfır olursa da login root devrede login contaier ınvısıble
+
+        val elemansayisi = manager.backStackEntryCount
+        if (elemansayisi == 0){
+            loginRoot.visibility = View.VISIBLE
+        }
+
+
     }
+
+
 }
