@@ -6,6 +6,7 @@ import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
 import android.view.View
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentManager
 import com.creativeoffice.instakotlin.R
@@ -39,8 +40,6 @@ class RegisterActivity : AppCompatActivity(), FragmentManager.OnBackStackChanged
             btnİleri.isEnabled = false
             btnİleri.setBackgroundResource(R.drawable.register_button)
             btnİleri.setTextColor(ContextCompat.getColor(this@RegisterActivity, R.color.sonukmavi))
-
-
         }
 
         tvEposta.setOnClickListener {
@@ -48,17 +47,13 @@ class RegisterActivity : AppCompatActivity(), FragmentManager.OnBackStackChanged
             viewTelefon.visibility = View.GONE
             viewEposta.visibility = View.VISIBLE
 
-
             etGirisYontemi.hint = "E-Posta"
             etGirisYontemi.setText("")
             etGirisYontemi.inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
 
-
             btnİleri.isEnabled = false
             btnİleri.setTextColor(ContextCompat.getColor(this@RegisterActivity, R.color.sonukmavi))
             btnİleri.setBackgroundResource(R.drawable.register_button)
-
-
         }
 
 
@@ -74,7 +69,7 @@ class RegisterActivity : AppCompatActivity(), FragmentManager.OnBackStackChanged
             override fun onTextChanged(p0: CharSequence?, start: Int, before: Int, count: Int) {
 
 
-                if (start + before + count >= 10) {
+                if (p0!!.length >= 10) {
 
                     btnİleri.isEnabled = true
 
@@ -109,30 +104,46 @@ class RegisterActivity : AppCompatActivity(), FragmentManager.OnBackStackChanged
 
             if (etGirisYontemi.hint.toString().equals("Telefon")) {
 
-                loginRoot.visibility = View.GONE
-                loginContainer.visibility = View.VISIBLE
 
-                val transaction = supportFragmentManager.beginTransaction()
-                transaction.replace(R.id.loginContainer, TelefonKoduGirFragment())
-                transaction.addToBackStack("TelefonKodu")
-                transaction.commit()
+                if (isValidTelefon(etGirisYontemi.text.toString())){
+                    loginRoot.visibility = View.GONE
+                    loginContainer.visibility = View.VISIBLE
 
-                EventBus.getDefault().postSticky(EventbusDataEvents.TelefonNoGonder(etGirisYontemi.text.toString()))
+                    val transaction = supportFragmentManager.beginTransaction()
+                    transaction.replace(R.id.loginContainer, TelefonKoduGirFragment())
+                    transaction.addToBackStack("TelefonKodu")
+                    transaction.commit()
+
+                    EventBus.getDefault().postSticky(EventbusDataEvents.KayitBilgileriniGonder(etGirisYontemi.text.toString(),null,null,null,false))
+
+                }else{
+                    Toast.makeText(this,"Lutfen dogru bir tel no girin", Toast.LENGTH_LONG).show()
+                }
+
+
+
 
 
 
             } else {
 
-                loginRoot.visibility = View.GONE
-                loginContainer.visibility = View.VISIBLE
-
-                val transaction = supportFragmentManager.beginTransaction()
-                transaction.replace(R.id.loginContainer, KayitFragment())
-                transaction.addToBackStack("Email Giris ")
-                transaction.commit()
 
 
-                EventBus.getDefault().postSticky(EventbusDataEvents.EmailGonder(etGirisYontemi.text.toString()))
+                if (isValidEmail(etGirisYontemi.text.toString())){
+                    loginRoot.visibility = View.GONE
+                    loginContainer.visibility = View.VISIBLE
+
+                    val transaction = supportFragmentManager.beginTransaction()
+                    transaction.replace(R.id.loginContainer, KayitFragment())
+                    transaction.addToBackStack("Email Giris")
+                    transaction.commit()
+
+
+                    EventBus.getDefault().postSticky(EventbusDataEvents.KayitBilgileriniGonder(null,etGirisYontemi.text.toString(),null,null,true))
+                }else{
+                    Toast.makeText(this,"Lutfen gecerli bir mail girin", Toast.LENGTH_LONG).show()
+                }
+
 
             }
 
@@ -150,9 +161,25 @@ class RegisterActivity : AppCompatActivity(), FragmentManager.OnBackStackChanged
         if (elemansayisi == 0){
             loginRoot.visibility = View.VISIBLE
         }
-
-
     }
 
+fun isValidEmail(kontrolEdilecekMail:String) :Boolean{
 
+    if (kontrolEdilecekMail==null){
+
+        return false
+    }
+
+    return android.util.Patterns.EMAIL_ADDRESS.matcher(kontrolEdilecekMail).matches()
+}
+
+    fun isValidTelefon(kontrolEdilecekTelefon:String) :Boolean{
+
+        if (kontrolEdilecekTelefon==null || kontrolEdilecekTelefon.length > 14 ){
+
+            return false
+        }
+
+        return android.util.Patterns.PHONE.matcher(kontrolEdilecekTelefon).matches()
+    }
 }

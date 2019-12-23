@@ -40,7 +40,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView19" />
 
     <EditText
-        android:id="@+id/editText6"
+        android:id="@+id/etSifre"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
@@ -63,12 +63,12 @@
         android:hint="Kullanıcı Adı"
         android:inputType="textPersonName"
         android:padding="15dp"
-        app:layout_constraintEnd_toEndOf="@+id/editText6"
-        app:layout_constraintStart_toStartOf="@+id/editText6"
-        app:layout_constraintTop_toBottomOf="@+id/editText6" />
+        app:layout_constraintEnd_toEndOf="@+id/etSifre"
+        app:layout_constraintStart_toStartOf="@+id/etSifre"
+        app:layout_constraintTop_toBottomOf="@+id/etSifre" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/btnGiris"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
