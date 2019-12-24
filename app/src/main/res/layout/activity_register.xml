@@ -11,6 +11,7 @@
         android:id="@+id/loginRoot"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -111,9 +112,10 @@
             android:background="@drawable/register_edit_text"
             android:ems="10"
             android:hint="Telefon"
-            android:inputType="phone"
+            android:inputType="textImeMultiLine|phone"
             android:padding="8dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvTelefon" />
 
@@ -187,7 +189,7 @@
         android:id="@+id/loginContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -10,9 +10,11 @@ import android.view.View
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentManager
+import com.creativeoffice.Home.HomeActivity
 import com.creativeoffice.Models.Users
 import com.creativeoffice.instakotlin.R
 import com.creativeoffice.utils.EventbusDataEvents
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_register.*
 import org.greenrobot.eventbus.EventBus
@@ -22,6 +24,9 @@ class RegisterActivity : AppCompatActivity(), FragmentManager.OnBackStackChanged
     lateinit var manager: FragmentManager
     lateinit var mRef: DatabaseReference
 
+    lateinit var mAuth: FirebaseAuth
+    lateinit var mAuthListener: FirebaseAuth.AuthStateListener
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
@@ -30,7 +35,8 @@ class RegisterActivity : AppCompatActivity(), FragmentManager.OnBackStackChanged
 
         manager = supportFragmentManager
         mRef = FirebaseDatabase.getInstance().reference
-
+        mAuth = FirebaseAuth.getInstance()
+        setupAuthListener()
 
         manager.addOnBackStackChangedListener(this)
         init()
@@ -115,17 +121,16 @@ class RegisterActivity : AppCompatActivity(), FragmentManager.OnBackStackChanged
         btnİleri.setOnClickListener {
 
             if (etGirisYontemi.hint.toString().equals("Telefon")) {
+                var cepTelefonuKullanimdaMi = false
 
 ////////////////isValidTelefon metodunda bir telefon nuamrasına benzıyor mu ? diye kontrol saglıyoruz. //////////////////
                 if (isValidTelefon(etGirisYontemi.text.toString())) {
 
-                    var cepTelefonuKullanimdaMi = false
                     mRef.child("users").addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onCancelled(p0: DatabaseError) {
                         }
 
                         override fun onDataChange(p0: DataSnapshot) {
-
                             if (p0.getValue() != null) {
 
                                 for (user in p0.children) {
@@ -134,14 +139,16 @@ class RegisterActivity : AppCompatActivity(), FragmentManager.OnBackStackChanged
 
                                     if (okunanKullanici!!.phone_number!!.equals(etGirisYontemi.text.toString())) {
 
-
-                                        Toast.makeText(this@RegisterActivity, "Telefon No Kullanımda", Toast.LENGTH_LONG).show()
-
+                                        Toast.makeText(
+                                            this@RegisterActivity,
+                                            "Telefon No Kullanımda",
+                                            Toast.LENGTH_LONG
+                                        ).show()
                                         cepTelefonuKullanimdaMi = true
                                         break
                                     } else {
                                         cepTelefonuKullanimdaMi = false
-
+                                        break
                                     }
 
 
@@ -193,8 +200,6 @@ class RegisterActivity : AppCompatActivity(), FragmentManager.OnBackStackChanged
 
                     mRef.child("users").addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onCancelled(p0: DatabaseError) {
-
-
                         }
 
                         override fun onDataChange(p0: DataSnapshot) {
@@ -257,8 +262,10 @@ class RegisterActivity : AppCompatActivity(), FragmentManager.OnBackStackChanged
         }
 
         tvGirisYap.setOnClickListener {
-            val intent = Intent(this,LoginActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+            val intent =
+                Intent(this, LoginActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
             startActivity(intent)
+            finish()
         }
 
     }
@@ -292,4 +299,39 @@ class RegisterActivity : AppCompatActivity(), FragmentManager.OnBackStackChanged
 
         return android.util.Patterns.PHONE.matcher(kontrolEdilecekTelefon).matches()
     }
+
+
+    private fun setupAuthListener() {
+        mAuthListener = object : FirebaseAuth.AuthStateListener {
+            override fun onAuthStateChanged(p0: FirebaseAuth) {
+                var user = FirebaseAuth.getInstance().currentUser
+                if (user != null) {
+                    var intent = Intent(
+                        this@RegisterActivity,
+                        HomeActivity::class.java
+                    ).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+                    startActivity(intent)
+                    finish()
+                } else {
+
+                }
+
+
+            }
+
+        }
+    }
+
+    override fun onStart() {
+        mAuth.addAuthStateListener(mAuthListener)
+        super.onStart()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener)
+        }
+    }
+
 }
