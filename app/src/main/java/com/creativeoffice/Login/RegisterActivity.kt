@@ -1,5 +1,6 @@
 package com.creativeoffice.Login
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -9,24 +10,34 @@ import android.view.View
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentManager
+import com.creativeoffice.Models.Users
 import com.creativeoffice.instakotlin.R
 import com.creativeoffice.utils.EventbusDataEvents
+import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_register.*
 import org.greenrobot.eventbus.EventBus
 
 class RegisterActivity : AppCompatActivity(), FragmentManager.OnBackStackChangedListener {
 
-   lateinit var manager : FragmentManager
+    lateinit var manager: FragmentManager
+    lateinit var mRef: DatabaseReference
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
+
+
         manager = supportFragmentManager
+        mRef = FirebaseDatabase.getInstance().reference
+
+
         manager.addOnBackStackChangedListener(this)
         init()
     }
 
     private fun init() {
+
 
         tvTelefon.setOnClickListener {
 
@@ -100,48 +111,144 @@ class RegisterActivity : AppCompatActivity(), FragmentManager.OnBackStackChanged
         })
 
 
+
         btnİleri.setOnClickListener {
 
             if (etGirisYontemi.hint.toString().equals("Telefon")) {
 
+////////////////isValidTelefon metodunda bir telefon nuamrasına benzıyor mu ? diye kontrol saglıyoruz. //////////////////
+                if (isValidTelefon(etGirisYontemi.text.toString())) {
 
-                if (isValidTelefon(etGirisYontemi.text.toString())){
-                    loginRoot.visibility = View.GONE
-                    loginContainer.visibility = View.VISIBLE
+                    var cepTelefonuKullanimdaMi = false
+                    mRef.child("users").addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onCancelled(p0: DatabaseError) {
+                        }
 
-                    val transaction = supportFragmentManager.beginTransaction()
-                    transaction.replace(R.id.loginContainer, TelefonKoduGirFragment())
-                    transaction.addToBackStack("TelefonKodu")
-                    transaction.commit()
+                        override fun onDataChange(p0: DataSnapshot) {
 
-                    EventBus.getDefault().postSticky(EventbusDataEvents.KayitBilgileriniGonder(etGirisYontemi.text.toString(),null,null,null,false))
+                            if (p0.getValue() != null) {
 
-                }else{
-                    Toast.makeText(this,"Lutfen dogru bir tel no girin", Toast.LENGTH_LONG).show()
+                                for (user in p0.children) {
+
+                                    var okunanKullanici = user.getValue(Users::class.java)
+
+                                    if (okunanKullanici!!.phone_number!!.equals(etGirisYontemi.text.toString())) {
+
+
+                                        Toast.makeText(this@RegisterActivity, "Telefon No Kullanımda", Toast.LENGTH_LONG).show()
+
+                                        cepTelefonuKullanimdaMi = true
+                                        break
+                                    } else {
+                                        cepTelefonuKullanimdaMi = false
+
+                                    }
+
+
+                                }
+
+                                if (cepTelefonuKullanimdaMi == false) {
+                                    loginRoot.visibility = View.GONE
+                                    loginContainer.visibility = View.VISIBLE
+
+                                    val transaction = supportFragmentManager.beginTransaction()
+                                    transaction.replace(
+                                        R.id.loginContainer,
+                                        TelefonKoduGirFragment()
+                                    )
+                                    transaction.addToBackStack("TelefonKodu")
+                                    transaction.commit()
+
+                                    EventBus.getDefault().postSticky(
+                                        EventbusDataEvents.KayitBilgileriniGonder(
+                                            etGirisYontemi.text.toString(),
+                                            null,
+                                            null,
+                                            null,
+                                            false
+                                        )
+                                    )
+
+                                }
+
+                            }
+
+                        }
+
+
+                    })
+
+
+                } else {
+                    Toast.makeText(this, "Lutfen dogru bir tel no girin", Toast.LENGTH_LONG).show()
                 }
-
-
-
-
 
 
             } else {
 
 
+                if (isValidEmail(etGirisYontemi.text.toString())) {
+                    pbRegister.visibility = View.VISIBLE
+                    var emailKullanimdami = false
 
-                if (isValidEmail(etGirisYontemi.text.toString())){
-                    loginRoot.visibility = View.GONE
-                    loginContainer.visibility = View.VISIBLE
-
-                    val transaction = supportFragmentManager.beginTransaction()
-                    transaction.replace(R.id.loginContainer, KayitFragment())
-                    transaction.addToBackStack("Email Giris")
-                    transaction.commit()
+                    mRef.child("users").addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onCancelled(p0: DatabaseError) {
 
 
-                    EventBus.getDefault().postSticky(EventbusDataEvents.KayitBilgileriniGonder(null,etGirisYontemi.text.toString(),null,null,true))
-                }else{
-                    Toast.makeText(this,"Lutfen gecerli bir mail girin", Toast.LENGTH_LONG).show()
+                        }
+
+                        override fun onDataChange(p0: DataSnapshot) {
+                            if (p0.getValue() != null) { //herhangi bir veri varsa çalıştırır.
+
+                                for (user in p0.children) {
+
+                                    var okunanKullanici = user.getValue(Users::class.java)
+
+                                    if (okunanKullanici!!.email!!.equals(etGirisYontemi.text.toString())) {
+
+                                        Toast.makeText(
+                                            this@RegisterActivity,
+                                            "Email kullanımda",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                        pbRegister.visibility = View.INVISIBLE
+
+                                        emailKullanimdami = true
+                                        break
+                                    }
+                                }
+                                if (emailKullanimdami == false) {
+                                    pbRegister.visibility = View.INVISIBLE
+                                    loginRoot.visibility = View.GONE
+                                    loginContainer.visibility = View.VISIBLE
+
+                                    val transaction = supportFragmentManager.beginTransaction()
+                                    transaction.replace(R.id.loginContainer, KayitFragment())
+                                    transaction.addToBackStack("Email Giris")
+                                    transaction.commit()
+
+
+                                    EventBus.getDefault().postSticky(
+                                        EventbusDataEvents.KayitBilgileriniGonder(
+                                            null,
+                                            etGirisYontemi.text.toString(),
+                                            null,
+                                            null,
+                                            true
+                                        )
+                                    )
+
+                                }
+
+                            }
+
+                        }
+
+                    })
+
+
+                } else {
+                    Toast.makeText(this, "Lutfen gecerli bir mail girin", Toast.LENGTH_LONG).show()
                 }
 
 
@@ -149,33 +256,36 @@ class RegisterActivity : AppCompatActivity(), FragmentManager.OnBackStackChanged
 
         }
 
+        tvGirisYap.setOnClickListener {
+            val intent = Intent(this,LoginActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+            startActivity(intent)
+        }
 
     }
-
 
 
     override fun onBackStackChanged() {// fragmentlerde geri nasıl gelebılırz duzgunce bunu kullanmalıyız. ilk olarak lateinit manager tanımladık daha sonra oncreat içinde cagırdık
         // metodu acıp kullanıyruz . tek tek geri gelirken sayıyor eger. sıfır olursa da login root devrede login contaier ınvısıble
 
         val elemansayisi = manager.backStackEntryCount
-        if (elemansayisi == 0){
+        if (elemansayisi == 0) {
             loginRoot.visibility = View.VISIBLE
         }
     }
 
-fun isValidEmail(kontrolEdilecekMail:String) :Boolean{
+    fun isValidEmail(kontrolEdilecekMail: String): Boolean {
 
-    if (kontrolEdilecekMail==null){
+        if (kontrolEdilecekMail == null) {
 
-        return false
+            return false
+        }
+
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(kontrolEdilecekMail).matches()
     }
 
-    return android.util.Patterns.EMAIL_ADDRESS.matcher(kontrolEdilecekMail).matches()
-}
+    fun isValidTelefon(kontrolEdilecekTelefon: String): Boolean {
 
-    fun isValidTelefon(kontrolEdilecekTelefon:String) :Boolean{
-
-        if (kontrolEdilecekTelefon==null || kontrolEdilecekTelefon.length > 14 ){
+        if (kontrolEdilecekTelefon == null || kontrolEdilecekTelefon.length > 14) {
 
             return false
         }
