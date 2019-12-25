@@ -1,15 +1,20 @@
 package com.creativeoffice.Home
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.creativeoffice.Login.LoginActivity
 import com.creativeoffice.instakotlin.R
 import com.creativeoffice.utils.BottomnavigationViewHelper
 import com.creativeoffice.utils.HomePagerAdapter
 import com.creativeoffice.utils.UniversalImageLoader
+import com.google.firebase.auth.FirebaseAuth
 import com.nostra13.universalimageloader.core.ImageLoader
 import kotlinx.android.synthetic.main.activity_home.*
 
 class HomeActivity : AppCompatActivity() {
+    lateinit var mAuth: FirebaseAuth
+    lateinit var mAuthListener: FirebaseAuth.AuthStateListener
 
     private val ACTIVITY_NO = 0
     private val TAG = "HomeActivity"
@@ -18,7 +23,9 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
+        mAuth= FirebaseAuth.getInstance()
 
+        setupAuthListener()
         setupNavigationView()
         setupHomeViewPager()
         initImageLoader()
@@ -63,5 +70,36 @@ class HomeActivity : AppCompatActivity() {
         ImageLoader.getInstance().init(universalImageLoader.config)
     }
 
+    private fun setupAuthListener() {
+        mAuthListener = object : FirebaseAuth.AuthStateListener {
+            override fun onAuthStateChanged(p0: FirebaseAuth) {
+                var user = FirebaseAuth.getInstance().currentUser
+                if (user == null) {
+                    var intent = Intent(this@HomeActivity, LoginActivity::class.java).addFlags(
+                        Intent.FLAG_ACTIVITY_NO_ANIMATION
+                    )
+                    startActivity(intent)
+                    finish()
+                } else {
+
+                }
+
+
+            }
+
+        }
+    }
+
+    override fun onStart() {
+        mAuth.addAuthStateListener(mAuthListener)
+        super.onStart()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener)
+        }
+    }
 
 }

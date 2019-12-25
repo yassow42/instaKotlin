@@ -32,7 +32,7 @@ class ProfileSettingActivity : AppCompatActivity() {
             profileSettingRoot.visibility = View.GONE //profilde ki genel yazıları gone ettık cunku arka planda gozukmesın
 
             var transaction = supportFragmentManager.beginTransaction()
-            transaction.addToBackStack("editProfileFragmentEklendi")
+            transaction.addToBackStack("editProfileFragmentEklendi")// geriye adım ekledık. Cunu gerı dedıgımızde dırek activityprofile gidiyordu. Şimdi ise Activityprofile settinge gıdıyr
 
             transaction.replace(R.id.profileSettingContainer, ProfileEditFragment())
             transaction.commit()
@@ -42,10 +42,10 @@ class ProfileSettingActivity : AppCompatActivity() {
         tvCikisYap.setOnClickListener {
             //Frame layout içinde fragment cagırma yapıyoruz. transaction
             profileSettingRoot.visibility = View.GONE
-            var transaction = supportFragmentManager.beginTransaction()
-            transaction.addToBackStack("signOutFragmentEklendi") // geriye adım ekledık. Cunu gerı dedıgımızde dırek activityprofile gidiyordu. Şimdi ise Activityprofile settinge gıdıyr
-            transaction.replace(R.id.profileSettingContainer, SignOutFragment())
-            transaction.commit()
+
+            var dialog = SignOutFragment()
+            dialog.show(supportFragmentManager,"cikisDiyalogGoster")
+
         }
 
     }

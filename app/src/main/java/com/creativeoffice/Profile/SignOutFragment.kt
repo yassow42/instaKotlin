@@ -1,28 +1,48 @@
 package com.creativeoffice.Profile
 
 
+import android.app.AlertDialog
+import android.app.Dialog
+import android.content.DialogInterface
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import androidx.fragment.app.DialogFragment
 
-import com.creativeoffice.instakotlin.R
+
+
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.android.synthetic.main.activity_profile.*
+
 
 /**
  * A simple [Fragment] subclass.
  */
-class SignOutFragment : Fragment() {
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_sign_out, container, false)
+class SignOutFragment : DialogFragment() {
 
 
-        return view
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+
+
+        var alert = AlertDialog.Builder(activity)
+            .setTitle("Instagram'dan Çıkış Yap")
+            .setMessage("Emin Misiniz ?")
+            .setPositiveButton("Çıkış Yap", object : DialogInterface.OnClickListener {
+                override fun onClick(p0: DialogInterface?, p1: Int) {
+                    FirebaseAuth.getInstance().signOut()
+                    activity!!.finish()
+                }
+
+            })
+            .setNegativeButton("İptal", object : DialogInterface.OnClickListener {
+                override fun onClick(p0: DialogInterface?, p1: Int) {
+                    dismiss()
+                }
+
+            })
+            .create()
+
+        return alert
     }
 
 
