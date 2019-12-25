@@ -86,7 +86,7 @@
         </de.hdodenhof.circleimageview.CircleImageView>
 
         <TextView
-            android:id="@+id/textView3"
+            android:id="@+id/tvPostSayisi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -95,13 +95,13 @@
             android:textColor="@color/siyah"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@+id/textView4"
+            app:layout_constraintEnd_toStartOf="@+id/tvFollowerSayisi"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/circleProfileImage"
             app:layout_constraintTop_toTopOf="@+id/circleProfileImage" />
 
         <TextView
-            android:id="@+id/textView4"
+            android:id="@+id/tvFollowerSayisi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="1000"
@@ -109,13 +109,13 @@
             android:textColor="@color/siyah"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@+id/textView5"
+            app:layout_constraintEnd_toStartOf="@+id/tvFollowingSayisi"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/textView3"
-            app:layout_constraintTop_toTopOf="@+id/textView3" />
+            app:layout_constraintStart_toEndOf="@+id/tvPostSayisi"
+            app:layout_constraintTop_toTopOf="@+id/tvPostSayisi" />
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/tvFollowingSayisi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="1500"
@@ -125,8 +125,8 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/textView4"
-            app:layout_constraintTop_toTopOf="@+id/textView4" />
+            app:layout_constraintStart_toEndOf="@+id/tvFollowerSayisi"
+            app:layout_constraintTop_toTopOf="@+id/tvFollowerSayisi" />
 
         <TextView
             android:id="@+id/textView6"
@@ -134,9 +134,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="Gönderi"
-            app:layout_constraintEnd_toEndOf="@+id/textView3"
-            app:layout_constraintStart_toStartOf="@+id/textView3"
-            app:layout_constraintTop_toBottomOf="@+id/textView3" />
+            app:layout_constraintEnd_toEndOf="@+id/tvPostSayisi"
+            app:layout_constraintStart_toStartOf="@+id/tvPostSayisi"
+            app:layout_constraintTop_toBottomOf="@+id/tvPostSayisi" />
 
         <TextView
             android:id="@+id/textView7"
@@ -144,9 +144,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="Takipçi"
-            app:layout_constraintEnd_toEndOf="@+id/textView4"
-            app:layout_constraintStart_toStartOf="@+id/textView4"
-            app:layout_constraintTop_toBottomOf="@+id/textView4" />
+            app:layout_constraintEnd_toEndOf="@+id/tvFollowerSayisi"
+            app:layout_constraintStart_toStartOf="@+id/tvFollowerSayisi"
+            app:layout_constraintTop_toBottomOf="@+id/tvFollowerSayisi" />
 
         <TextView
             android:id="@+id/textView8"
@@ -154,9 +154,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="Takip"
-            app:layout_constraintEnd_toEndOf="@+id/textView5"
-            app:layout_constraintStart_toStartOf="@+id/textView5"
-            app:layout_constraintTop_toBottomOf="@+id/textView5" />
+            app:layout_constraintEnd_toEndOf="@+id/tvFollowingSayisi"
+            app:layout_constraintStart_toStartOf="@+id/tvFollowingSayisi"
+            app:layout_constraintTop_toBottomOf="@+id/tvFollowingSayisi" />
 
         <TextView
             android:id="@+id/tvProfilDuzenleButton"
@@ -174,12 +174,12 @@
             app:layout_constraintStart_toEndOf="@+id/circleProfileImage" />
 
         <TextView
-            android:id="@+id/yvProfilGercekAdi"
+            android:id="@+id/tvProfilGercekAdi"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
-            android:text="yassow42"
+            android:text="Yasin İnce"
             android:textAlignment="viewStart"
             android:textColor="@color/siyah"
             android:textStyle="bold"
@@ -191,9 +191,19 @@
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="einldsa ddn sai dnsa dnsado nsad nsa snad nsadksandksa ndksa ndsan dsanikd sapknid spakdp ksadkpns akd nasnkid sa as"
-            app:layout_constraintStart_toStartOf="@+id/yvProfilGercekAdi"
-            app:layout_constraintTop_toBottomOf="@+id/yvProfilGercekAdi" />
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="@+id/tvProfilGercekAdi"
+            app:layout_constraintTop_toBottomOf="@+id/tvProfilGercekAdi" />
+
+        <TextView
+            android:id="@+id/tvWebSitesi"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@+id/tvBiyografi"
+            app:layout_constraintStart_toStartOf="@+id/tvBiyografi"
+            app:layout_constraintTop_toBottomOf="@+id/tvBiyografi" />
 
         <com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx
             android:id="@+id/bottomNavigationView"
@@ -223,6 +233,7 @@
         android:id="@+id/profileContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

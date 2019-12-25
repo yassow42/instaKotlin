@@ -6,10 +6,13 @@ import android.os.Bundle
 import android.view.View
 import com.creativeoffice.Home.HomeActivity
 import com.creativeoffice.Login.LoginActivity
+import com.creativeoffice.Models.Users
 import com.creativeoffice.instakotlin.R
 import com.creativeoffice.utils.BottomnavigationViewHelper
 import com.creativeoffice.utils.UniversalImageLoader
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_profile.*
 import kotlinx.android.synthetic.main.activity_profile.bottomNavigationView
 
@@ -20,27 +23,76 @@ class ProfileActivity : AppCompatActivity() {
     private val TAG = "ProfileActivity"
 
     lateinit var mAuth: FirebaseAuth
+    lateinit var mUser: FirebaseUser
     lateinit var mAuthListener: FirebaseAuth.AuthStateListener
+    lateinit var mRef: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
-        mAuth= FirebaseAuth.getInstance()
+
         setupAuthListener()
+        mAuth = FirebaseAuth.getInstance()
+        mUser = mAuth!!.currentUser!!
+        mRef = FirebaseDatabase.getInstance().reference
+
+
         setupToolbar()
         setupNavigationView()
+
+        kullaniciBilgileriniGetir()
         setupProfilePhoto()
 
 
+    }
+
+    private fun kullaniciBilgileriniGetir() {
+
+        mRef.child("users").child(mUser.uid).addListenerForSingleValueEvent(object :
+            ValueEventListener {
+            override fun onCancelled(p0: DatabaseError) {
+
+
+            }
+
+            override fun onDataChange(p0: DataSnapshot) {
+                if (p0.getValue() != null) {
+                    var okunanKullaniciBilgileri = p0.getValue(Users::class.java)
+                    tvPostSayisi.text = okunanKullaniciBilgileri!!.user_detail!!.post.toString()
+                    tvProfilAdiToolbar.text= okunanKullaniciBilgileri.user_name.toString()
+                    tvFollowerSayisi.text = okunanKullaniciBilgileri!!.user_detail!!.follower.toString()
+                    tvFollowingSayisi.text= okunanKullaniciBilgileri!!.user_detail!!.following.toString()
+                    tvProfilGercekAdi.text=okunanKullaniciBilgileri.adi_soyadi.toString()
+
+                    if (okunanKullaniciBilgileri!!.user_detail!!.biography!!.isNotEmpty()){
+
+                        tvBiyografi.visibility = View.VISIBLE
+                        tvBiyografi.text=okunanKullaniciBilgileri!!.user_detail!!.biography
+
+                    }
+
+                    if (okunanKullaniciBilgileri!!.user_detail!!.web_site!!.isNotEmpty()){
+
+                        tvWebSitesi.visibility = View.VISIBLE
+                        tvWebSitesi.text=okunanKullaniciBilgileri!!.user_detail!!.web_site
+
+                    }
+                }
+
+
+            }
+
+
+        })
 
     }
 
     private fun setupProfilePhoto() {
 
-        val imgURl= "i.imgyukle.com/2019/12/21/R6ekHS.jpg"
-        val ilkKisim="https://"
+        val imgURl = "i.imgyukle.com/2019/12/21/R6ekHS.jpg"
+        val ilkKisim = "https://"
 
-UniversalImageLoader.setImage(imgURl,circleProfileImage,mProgressBarActivityProfile,ilkKisim)
+        UniversalImageLoader.setImage(imgURl, circleProfileImage, mProgressBarActivityProfile, ilkKisim)
 
     }
 
@@ -93,15 +145,20 @@ UniversalImageLoader.setImage(imgURl,circleProfileImage,mProgressBarActivityProf
 
 
     private fun setupAuthListener() {
+        mAuth = FirebaseAuth.getInstance()
         mAuthListener = object : FirebaseAuth.AuthStateListener {
             override fun onAuthStateChanged(p0: FirebaseAuth) {
                 var user = FirebaseAuth.getInstance().currentUser
                 if (user == null) {
-                    var intent = Intent(this@ProfileActivity, LoginActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+                    var intent = Intent(
+                        this@ProfileActivity,
+                        LoginActivity::class.java
+                    ).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     startActivity(intent)
                     finish()
                 } else {
+
 
                 }
 
@@ -110,6 +167,7 @@ UniversalImageLoader.setImage(imgURl,circleProfileImage,mProgressBarActivityProf
 
         }
     }
+
     override fun onStart() {
         mAuth.addAuthStateListener(mAuthListener)
         super.onStart()

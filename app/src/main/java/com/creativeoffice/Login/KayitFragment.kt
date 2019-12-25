@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.Toast
+import com.creativeoffice.Models.UserDetails
 import com.creativeoffice.Models.Users
 
 import com.creativeoffice.instakotlin.R
@@ -48,9 +49,6 @@ class KayitFragment : Fragment() {
         mAuth = FirebaseAuth.getInstance()
         progresBar = view.pbKullaniciKayit
 
-        if (mAuth.currentUser != null) {
-            mAuth.signOut()
-        }
 
 
         mRef = FirebaseDatabase.getInstance().reference
@@ -64,26 +62,31 @@ class KayitFragment : Fragment() {
 
             var kullaniciAdiKullanimdaMi = false
 
-            mRef.child("users").addListenerForSingleValueEvent(object :ValueEventListener{
+            mRef.child("users").addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onCancelled(p0: DatabaseError) {
 
                 }
+
                 override fun onDataChange(p0: DataSnapshot) {
 
-                    if (p0.getValue()!= null){
+                    if (p0.getValue() != null) {
 
-                        for (user in p0.children){
+                        for (user in p0.children) {
                             var okunanKullanici = user.getValue(Users::class.java)
 
-                            if (okunanKullanici!!.user_name!!.equals(userName)){
-                                Toast.makeText(activity,"Kullanıcı Adı Kullanımda", Toast.LENGTH_LONG).show()
+                            if (okunanKullanici!!.user_name!!.equals(userName)) {
+                                Toast.makeText(
+                                    activity,
+                                    "Kullanıcı Adı Kullanımda",
+                                    Toast.LENGTH_LONG
+                                ).show()
                                 progresBar.visibility = View.INVISIBLE
                                 kullaniciAdiKullanimdaMi = true
                                 break
                             }
 
                         }
-                        if (kullaniciAdiKullanimdaMi == false){
+                        if (kullaniciAdiKullanimdaMi == false) {
 
                             if (emailIleKayitIslemi) {
 
@@ -103,16 +106,30 @@ class KayitFragment : Fragment() {
                                                 ).show()
 
                                                 //oturum açan kullancının verilerini databaseye kaydetme
-
+                                                var kaydedilecekKullaniciDetaylari =
+                                                    UserDetails("0", "0", "0", "", "", "")
                                                 var kaydedilecekKullanici =
-                                                    Users(gelenEmail, "", sifre, userName, userID, adSoyad, "")
+                                                    Users(
+                                                        gelenEmail,
+                                                        sifre,
+                                                        userName,
+                                                        adSoyad,
+                                                        null,
+                                                        null,
+                                                        userID,
+                                                        kaydedilecekKullaniciDetaylari
+                                                    )
 
-                                                mRef.child("users").child(userID).setValue(kaydedilecekKullanici)
-                                                    .addOnCompleteListener(object : OnCompleteListener<Void> {
+
+                                                mRef.child("users").child(userID)
+                                                    .setValue(kaydedilecekKullanici)
+                                                    .addOnCompleteListener(object :
+                                                        OnCompleteListener<Void> {
                                                         override fun onComplete(p0: Task<Void>) {
                                                             if (p0.isSuccessful) {
 
-                                                                progresBar.visibility = View.INVISIBLE
+                                                                progresBar.visibility =
+                                                                    View.INVISIBLE
 
 
                                                                 Toast.makeText(
@@ -122,21 +139,22 @@ class KayitFragment : Fragment() {
                                                                 ).show()
 
 
-
                                                             } else {
                                                                 //eger kullanici oturum actı ama databaseye kaydedilmediyse kullanıcıyı sılıyoruz. Register Activitye tekrar göndeririz.
-                                                                mAuth.currentUser!!.delete().addOnCompleteListener {
-                                                                    if (p0.isSuccessful) {
-                                                                        progresBar.visibility = View.INVISIBLE
-                                                                        Toast.makeText(
-                                                                            activity!!,
-                                                                            "kullanici kaydedilemedi, Tekrar deneyin...",
-                                                                            Toast.LENGTH_LONG
-                                                                        ).show()
+                                                                mAuth.currentUser!!.delete()
+                                                                    .addOnCompleteListener {
+                                                                        if (p0.isSuccessful) {
+                                                                            progresBar.visibility =
+                                                                                View.INVISIBLE
+                                                                            Toast.makeText(
+                                                                                activity!!,
+                                                                                "kullanici kaydedilemedi, Tekrar deneyin...",
+                                                                                Toast.LENGTH_LONG
+                                                                            ).show()
 
 
+                                                                        }
                                                                     }
-                                                                }
 
                                                             }
                                                         }
@@ -177,10 +195,23 @@ class KayitFragment : Fragment() {
                                                     Toast.LENGTH_LONG
                                                 ).show()
                                                 progresBar.visibility = View.INVISIBLE
+                                                var kaydedilecekKullaniciDetaylari =
+                                                    UserDetails("0", "0", "0", "", "", "")
 
                                                 var kaydedilecekKullanici =
-                                                    Users("", sahteEmail, sifre, userName, userID, adSoyad, telNo)
-                                                mRef.child("users").child(userID).setValue(kaydedilecekKullanici)
+                                                    Users(
+                                                        "",
+                                                        sifre,
+                                                        userName,
+                                                        adSoyad,
+                                                        telNo,
+                                                        sahteEmail,
+                                                        userID,
+                                                        kaydedilecekKullaniciDetaylari
+
+                                                    )
+                                                mRef.child("users").child(userID)
+                                                    .setValue(kaydedilecekKullanici)
                                                     .addOnCompleteListener {
 
                                                         if (p0.isSuccessful) {
@@ -194,16 +225,17 @@ class KayitFragment : Fragment() {
 
                                                         } else {
                                                             //eger kullanici oturum actı ama databaseye kaydedilmediyse kullanıcıyı sılıyoruz. Register Activitye tekrar göndeririz.
-                                                            mAuth.currentUser!!.delete().addOnCompleteListener {
-                                                                if (p0.isSuccessful) {
-                                                                    Toast.makeText(
-                                                                        activity!!,
-                                                                        "kullanici kaydedilemedi, Tekrar deneyin...",
-                                                                        Toast.LENGTH_LONG
-                                                                    ).show()
+                                                            mAuth.currentUser!!.delete()
+                                                                .addOnCompleteListener {
+                                                                    if (p0.isSuccessful) {
+                                                                        Toast.makeText(
+                                                                            activity!!,
+                                                                            "kullanici kaydedilemedi, Tekrar deneyin...",
+                                                                            Toast.LENGTH_LONG
+                                                                        ).show()
 
+                                                                    }
                                                                 }
-                                                            }
                                                         }
                                                     }
 
@@ -223,21 +255,24 @@ class KayitFragment : Fragment() {
                             }
 
                         }
-                        }
-
                     }
 
+                }
 
-                })
+
+            })
 
 
-            }
+        }
         view.tvGirisYap.setOnClickListener {
-            val intent = Intent(activity,LoginActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+            val intent = Intent(
+                activity,
+                LoginActivity::class.java
+            ).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
             startActivity(intent)
         }
 
-            //kullanıcı e mail ile kaydolma ıstyr
+        //kullanıcı e mail ile kaydolma ıstyr
 
 
         return view
