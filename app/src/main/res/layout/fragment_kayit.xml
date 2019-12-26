@@ -24,7 +24,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/etAdSoyad"
+        android:id="@+id/etProfileName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -49,9 +49,9 @@
         android:hint="Şifre"
         android:inputType="none|textPassword"
         android:padding="15dp"
-        app:layout_constraintEnd_toEndOf="@+id/etAdSoyad"
-        app:layout_constraintStart_toStartOf="@+id/etAdSoyad"
-        app:layout_constraintTop_toBottomOf="@+id/etAdSoyad" />
+        app:layout_constraintEnd_toEndOf="@+id/etProfileName"
+        app:layout_constraintStart_toStartOf="@+id/etProfileName"
+        app:layout_constraintTop_toBottomOf="@+id/etProfileName" />
 
     <EditText
         android:id="@+id/etKullaniciAdi"

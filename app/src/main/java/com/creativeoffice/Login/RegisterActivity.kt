@@ -279,7 +279,7 @@ class RegisterActivity : AppCompatActivity(), FragmentManager.OnBackStackChanged
             loginRoot.visibility = View.VISIBLE
         }
     }
-
+//adam akıllı e mail mi yoksa
     fun isValidEmail(kontrolEdilecekMail: String): Boolean {
 
         if (kontrolEdilecekMail == null) {
@@ -289,7 +289,7 @@ class RegisterActivity : AppCompatActivity(), FragmentManager.OnBackStackChanged
 
         return android.util.Patterns.EMAIL_ADDRESS.matcher(kontrolEdilecekMail).matches()
     }
-
+//adam akıllı telefon no mu ?
     fun isValidTelefon(kontrolEdilecekTelefon: String): Boolean {
 
         if (kontrolEdilecekTelefon == null || kontrolEdilecekTelefon.length > 14) {

@@ -9,12 +9,14 @@ import com.creativeoffice.Login.LoginActivity
 import com.creativeoffice.Models.Users
 import com.creativeoffice.instakotlin.R
 import com.creativeoffice.utils.BottomnavigationViewHelper
+import com.creativeoffice.utils.EventbusDataEvents
 import com.creativeoffice.utils.UniversalImageLoader
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_profile.*
 import kotlinx.android.synthetic.main.activity_profile.bottomNavigationView
+import org.greenrobot.eventbus.EventBus
 
 
 class ProfileActivity : AppCompatActivity() {
@@ -33,7 +35,7 @@ class ProfileActivity : AppCompatActivity() {
 
         setupAuthListener()
         mAuth = FirebaseAuth.getInstance()
-        mUser = mAuth!!.currentUser!!
+        mUser = mAuth.currentUser!!
         mRef = FirebaseDatabase.getInstance().reference
 
 
@@ -41,14 +43,13 @@ class ProfileActivity : AppCompatActivity() {
         setupNavigationView()
 
         kullaniciBilgileriniGetir()
-        setupProfilePhoto()
 
 
     }
 
     private fun kullaniciBilgileriniGetir() {
 
-        mRef.child("users").child(mUser.uid).addListenerForSingleValueEvent(object :
+        mRef.child("users").child(mUser.uid).addValueEventListener(object :
             ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {
 
@@ -58,23 +59,37 @@ class ProfileActivity : AppCompatActivity() {
             override fun onDataChange(p0: DataSnapshot) {
                 if (p0.getValue() != null) {
                     var okunanKullaniciBilgileri = p0.getValue(Users::class.java)
-                    tvPostSayisi.text = okunanKullaniciBilgileri!!.user_detail!!.post.toString()
-                    tvProfilAdiToolbar.text= okunanKullaniciBilgileri.user_name.toString()
-                    tvFollowerSayisi.text = okunanKullaniciBilgileri!!.user_detail!!.follower.toString()
-                    tvFollowingSayisi.text= okunanKullaniciBilgileri!!.user_detail!!.following.toString()
-                    tvProfilGercekAdi.text=okunanKullaniciBilgileri.adi_soyadi.toString()
 
-                    if (okunanKullaniciBilgileri!!.user_detail!!.biography!!.isNotEmpty()){
+                    EventBus.getDefault().postSticky(EventbusDataEvents.KullaniciBilgileriniGonder(okunanKullaniciBilgileri))
+
+                    tvPostSayisi.text = okunanKullaniciBilgileri!!.user_detail!!.post.toString()
+                    tvProfilAdiToolbar.text = okunanKullaniciBilgileri.user_name.toString()
+                    tvFollowerSayisi.text = okunanKullaniciBilgileri.user_detail!!.follower.toString()
+                    tvFollowingSayisi.text = okunanKullaniciBilgileri.user_detail!!.following.toString()
+                    tvProfilGercekAdi.text = okunanKullaniciBilgileri.adi_soyadi.toString()
+
+                    //Profil fotosunu byle cagırıyoruz.
+                    val imgURl: String = okunanKullaniciBilgileri.user_detail!!.profile_picture!!
+
+                    UniversalImageLoader.setImage(
+                        imgURl,
+                        circleProfileImage, mProgressBarActivityProfile
+                    )
+
+
+
+
+                    if (okunanKullaniciBilgileri.user_detail!!.biography!!.isNotEmpty()) {
 
                         tvBiyografi.visibility = View.VISIBLE
-                        tvBiyografi.text=okunanKullaniciBilgileri!!.user_detail!!.biography
+                        tvBiyografi.text = okunanKullaniciBilgileri.user_detail!!.biography
 
                     }
 
-                    if (okunanKullaniciBilgileri!!.user_detail!!.web_site!!.isNotEmpty()){
+                    if (okunanKullaniciBilgileri.user_detail!!.web_site!!.isNotEmpty()) {
 
                         tvWebSitesi.visibility = View.VISIBLE
-                        tvWebSitesi.text=okunanKullaniciBilgileri!!.user_detail!!.web_site
+                        tvWebSitesi.text = okunanKullaniciBilgileri.user_detail!!.web_site
 
                     }
                 }
@@ -89,10 +104,10 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun setupProfilePhoto() {
 
-        val imgURl = "i.imgyukle.com/2019/12/21/R6ekHS.jpg"
-        val ilkKisim = "https://"
+        val imgURl = "https://i.imgyukle.com/2019/12/21/R6ekHS.jpg"
 
-        UniversalImageLoader.setImage(imgURl, circleProfileImage, mProgressBarActivityProfile, ilkKisim)
+
+        UniversalImageLoader.setImage(imgURl, circleProfileImage, mProgressBarActivityProfile)
 
     }
 
@@ -118,7 +133,7 @@ class ProfileActivity : AppCompatActivity() {
 
         tvProfilDuzenleButton.setOnClickListener {
             profileRoot.visibility = View.GONE
-
+            profileContainer.visibility = View.VISIBLE
             val transaction = supportFragmentManager.beginTransaction()
 
             transaction.replace(R.id.profileContainer, ProfileEditFragment())

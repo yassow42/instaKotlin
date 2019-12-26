@@ -1,23 +1,34 @@
 package com.creativeoffice.Profile
 
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
+import android.widget.Toast
+import com.creativeoffice.Models.Users
 
-
+import androidx.appcompat.app.AppCompatActivity
 import com.creativeoffice.instakotlin.R
+import com.creativeoffice.utils.EventbusDataEvents
 import com.creativeoffice.utils.UniversalImageLoader
-import de.hdodenhof.circleimageview.CircleImageView
+import com.google.firebase.database.*
+import kotlinx.android.synthetic.main.fragment_profile_edit.*
 import kotlinx.android.synthetic.main.fragment_profile_edit.view.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 
 
 class ProfileEditFragment : Fragment() {
-    lateinit var circleProfileImageFragment: CircleImageView
-    lateinit var mProgresBarFragment: ProgressBar
+
+    val RESIM_SEC = 100
+
+    lateinit var gelenKullaniciBilgileri: Users
+    lateinit var mDatabaseRef: DatabaseReference
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -26,36 +37,138 @@ class ProfileEditFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_profile_edit, container, false)
 
-        mProgresBarFragment = view.findViewById(R.id.mProgresBar)
-        circleProfileImageFragment = view.findViewById(R.id.circleProfileImage)
+        mDatabaseRef = FirebaseDatabase.getInstance().reference
 
-        setupProfilePicture()
+
+        setupKullaniciBilgileri(view) //view parametresi olarak verik cunku inflate ettigimiz view a direk metodun içinde ulasamayız.
+        // setupProfilePicture()
 
         view.imgCLose.setOnClickListener {
 
             activity?.onBackPressed()
 
         }
+
+        view.tvFotografDegistir.setOnClickListener {
+            var intent = Intent()
+
+            intent.setType("image/*")
+            intent.setAction(Intent.ACTION_PICK)
+            startActivityForResult(intent, RESIM_SEC)
+        }
+
+        view.imgBtnDegisiklikleriKaydet.setOnClickListener {
+            if (!gelenKullaniciBilgileri!!.adi_soyadi.equals(view.etProfileName.text.toString())) {
+                mDatabaseRef.child("users").child(gelenKullaniciBilgileri.user_id!!).child("adi_soyadi").setValue(view.etProfileName.text.toString())
+            }
+            //  if (gelenKullaniciBilgileri.user_detail!!.biography!!.isNotEmpty()) {
+            if (!gelenKullaniciBilgileri.user_detail!!.biography.equals(view.etUserBio.text.toString())) {
+                mDatabaseRef.child("users").child(gelenKullaniciBilgileri.user_id!!).child("user_detail").child("biography").setValue(view.etUserBio.text.toString())
+            }
+
+
+            //  if (gelenKullaniciBilgileri.user_detail!!.web_site!!.isNotEmpty()) {
+
+            if (!gelenKullaniciBilgileri.user_detail!!.web_site.equals(view.etWebSite.text.toString())) {
+
+                mDatabaseRef.child("users").child(gelenKullaniciBilgileri.user_id!!).child("user_detail").child("web_site").setValue(view.etWebSite.text.toString())
+            }
+
+            if (!gelenKullaniciBilgileri!!.user_name!!.equals(view.etUserName.text.toString())) {
+                mDatabaseRef.child("users").orderByChild("user_name").addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onCancelled(p0: DatabaseError) {
+
+                    }
+
+                    override fun onDataChange(p0: DataSnapshot) {
+                        var userNameKullanimdaMi = false
+
+                        for (user in p0.children) {
+
+                            var okunanKullanici = user.getValue(Users::class.java)!!.user_name
+
+                            if (!okunanKullanici!!.equals(view.etUserName.text.toString())) {
+
+                                userNameKullanimdaMi = true
+                                Toast.makeText(activity, "kullanıcı adı kullanımda", Toast.LENGTH_SHORT).show()
+                                // mDatabaseRef.child("users").child(gelenKullaniciBilgileri.user_id!!).child("user_name").setValue(view.etUserName.text.toString())
+                                break
+
+                            } else {
+
+                            }
+                        }
+
+                        if (userNameKullanimdaMi==false){
+                            mDatabaseRef.child("users").child(gelenKullaniciBilgileri.user_id!!).child("user_name").setValue(view.etUserName.text.toString())
+
+                        }
+
+                    }
+
+
+                })
+
+            }
+        }
+
         return view
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
 
-    private fun setupProfilePicture() {
+        if (requestCode == RESIM_SEC && resultCode == AppCompatActivity.RESULT_OK && data!!.data != null) {
 
-        // https://smartpro.com.tr/wp-content/uploads/2019/05/android.jpg
+            var profilResimURL = data!!.data
+            circleProfileImage.setImageURI(profilResimURL)
 
-
-        var imgURL = "i.imgyukle.com/2019/12/21/R6ekHS.jpg"
-        var ilkKisim = "https://"
-
-        UniversalImageLoader.setImage(
-            imgURL,
-            circleProfileImageFragment,
-            mProgresBarFragment,
-            ilkKisim
-        )
+        }
 
     }
+
+    private fun setupKullaniciBilgileri(view: View?) {
+
+
+        view!!.etProfileName.setText(gelenKullaniciBilgileri.adi_soyadi)
+        view!!.etUserName.setText(gelenKullaniciBilgileri.user_name)
+
+        if (!gelenKullaniciBilgileri.user_detail!!.biography!!.isNullOrEmpty()) {
+            view!!.etUserBio.setText(gelenKullaniciBilgileri.user_detail!!.biography)
+        }
+        if (!gelenKullaniciBilgileri.user_detail!!.web_site!!.isNullOrEmpty()) {
+            view!!.etWebSite.setText(gelenKullaniciBilgileri.user_detail!!.web_site)
+        }
+
+        if (!gelenKullaniciBilgileri.user_detail!!.profile_picture!!.isNullOrEmpty()) {
+            val imgUrl: String = gelenKullaniciBilgileri.user_detail!!.profile_picture!!
+            UniversalImageLoader.setImage(imgUrl, view!!.circleProfileImage, view!!.mProgresBar)
+        }
+
+
+    }
+
+
+    ////////////////////////EVENTBUSS////////////////////////////////////////////
+    @Subscribe(sticky = true)
+    internal fun onKullaniciBilgileriEvent(kullaniciBilgileri: EventbusDataEvents.KullaniciBilgileriniGonder) {
+
+        gelenKullaniciBilgileri = kullaniciBilgileri.kullanici!! //Lateinit var olarak kullanıcıyı global actık. daha sonra yayında gelen veriyi aldık
+
+    }
+
+
+    override fun onAttach(context: Context) {
+        EventBus.getDefault().register(this)
+        super.onAttach(context)
+    }
+
+    override fun onDetach() {
+
+        EventBus.getDefault().unregister(this)
+        super.onDetach()
+    }
+    ////////////////////////EVENTBUSS////////////////////////////////////////////
 
 
 }

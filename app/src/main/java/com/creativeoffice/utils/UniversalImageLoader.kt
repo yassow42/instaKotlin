@@ -42,15 +42,15 @@ class UniversalImageLoader(val mContext: Context) {
         fun setImage(
             imgURL: String,
             imageView: ImageView,
-            mProgresBar: ProgressBar,
-            ilkKisim: String
+            mProgresBar: ProgressBar
+
         ) {
 
 
             //İmgURL: facebook.com/images/logo.jpeg
             //ilkKısım: http:// olur
             val imageLoader = ImageLoader.getInstance()
-            imageLoader.displayImage(ilkKisim + imgURL, imageView, object : ImageLoadingListener {
+            imageLoader.displayImage(imgURL, imageView, object : ImageLoadingListener {
                 override fun onLoadingComplete(
                     imageUri: String?,
                     view: View?,

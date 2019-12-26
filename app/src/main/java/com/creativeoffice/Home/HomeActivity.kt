@@ -23,7 +23,8 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
-        mAuth= FirebaseAuth.getInstance()
+
+        mAuth = FirebaseAuth.getInstance()
 
         setupAuthListener()
         setupNavigationView()

@@ -20,7 +20,6 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import kotlinx.android.synthetic.main.fragment_kayit.*
 import kotlinx.android.synthetic.main.fragment_kayit.view.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -57,7 +56,7 @@ class KayitFragment : Fragment() {
         view.btnGiris.setOnClickListener {
             var sifre = view.etSifre.text.toString()
             var userName = view.etKullaniciAdi.text.toString()
-            var adSoyad = view.etAdSoyad.text.toString()
+            var adSoyad = view.etProfileName.text.toString()
             progresBar.visibility = View.VISIBLE
 
             var kullaniciAdiKullanimdaMi = false
@@ -110,21 +109,13 @@ class KayitFragment : Fragment() {
                                                     UserDetails("0", "0", "0", "", "", "")
                                                 var kaydedilecekKullanici =
                                                     Users(
-                                                        gelenEmail,
-                                                        sifre,
-                                                        userName,
-                                                        adSoyad,
-                                                        null,
-                                                        null,
-                                                        userID,
-                                                        kaydedilecekKullaniciDetaylari
+                                                       gelenEmail,sifre,userName,adSoyad,"","",userID,kaydedilecekKullaniciDetaylari
                                                     )
 
 
                                                 mRef.child("users").child(userID)
                                                     .setValue(kaydedilecekKullanici)
-                                                    .addOnCompleteListener(object :
-                                                        OnCompleteListener<Void> {
+                                                    .addOnCompleteListener(object : OnCompleteListener<Void> {
                                                         override fun onComplete(p0: Task<Void>) {
                                                             if (p0.isSuccessful) {
 
@@ -181,7 +172,7 @@ class KayitFragment : Fragment() {
                                 var sifre = view.etSifre.text.toString()
                                 var sahteEmail = telNo + "@gmail.com"
                                 var userName = view.etKullaniciAdi.text.toString()
-                                var adSoyad = view.etAdSoyad.text.toString()
+                                var adSoyad = view.etProfileName.text.toString()
 
                                 mAuth.createUserWithEmailAndPassword(sahteEmail, sifre)
                                     .addOnCompleteListener(object : OnCompleteListener<AuthResult> {
@@ -227,7 +218,7 @@ class KayitFragment : Fragment() {
                                                             //eger kullanici oturum actı ama databaseye kaydedilmediyse kullanıcıyı sılıyoruz. Register Activitye tekrar göndeririz.
                                                             mAuth.currentUser!!.delete()
                                                                 .addOnCompleteListener {
-                                                                    if (p0.isSuccessful) {
+                                                                if (p0.isSuccessful) {
                                                                         Toast.makeText(
                                                                             activity!!,
                                                                             "kullanici kaydedilemedi, Tekrar deneyin...",
