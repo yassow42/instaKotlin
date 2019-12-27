@@ -3,7 +3,9 @@ package com.creativeoffice.Profile
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -15,11 +17,18 @@ import androidx.appcompat.app.AppCompatActivity
 import com.creativeoffice.instakotlin.R
 import com.creativeoffice.utils.EventbusDataEvents
 import com.creativeoffice.utils.UniversalImageLoader
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.OnFailureListener
+import com.google.android.gms.tasks.Task
 import com.google.firebase.database.*
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.UploadTask
 import kotlinx.android.synthetic.main.fragment_profile_edit.*
 import kotlinx.android.synthetic.main.fragment_profile_edit.view.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import java.lang.Exception
 
 
 class ProfileEditFragment : Fragment() {
@@ -28,7 +37,9 @@ class ProfileEditFragment : Fragment() {
 
     lateinit var gelenKullaniciBilgileri: Users
     lateinit var mDatabaseRef: DatabaseReference
+    lateinit var mStorage: StorageReference
 
+    var profilPhotoUri: Uri? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,6 +49,7 @@ class ProfileEditFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_profile_edit, container, false)
 
         mDatabaseRef = FirebaseDatabase.getInstance().reference
+        mStorage = FirebaseStorage.getInstance().reference
 
 
         setupKullaniciBilgileri(view) //view parametresi olarak verik cunku inflate ettigimiz view a direk metodun içinde ulasamayız.
@@ -58,20 +70,56 @@ class ProfileEditFragment : Fragment() {
         }
 
         view.imgBtnDegisiklikleriKaydet.setOnClickListener {
+            var kullaniciGüncellendiMi = false
+
             if (!gelenKullaniciBilgileri!!.adi_soyadi.equals(view.etProfileName.text.toString())) {
                 mDatabaseRef.child("users").child(gelenKullaniciBilgileri.user_id!!).child("adi_soyadi").setValue(view.etProfileName.text.toString())
+                kullaniciGüncellendiMi = true
             }
             //  if (gelenKullaniciBilgileri.user_detail!!.biography!!.isNotEmpty()) {
             if (!gelenKullaniciBilgileri.user_detail!!.biography.equals(view.etUserBio.text.toString())) {
                 mDatabaseRef.child("users").child(gelenKullaniciBilgileri.user_id!!).child("user_detail").child("biography").setValue(view.etUserBio.text.toString())
+                kullaniciGüncellendiMi = true
             }
-
-
             //  if (gelenKullaniciBilgileri.user_detail!!.web_site!!.isNotEmpty()) {
 
             if (!gelenKullaniciBilgileri.user_detail!!.web_site.equals(view.etWebSite.text.toString())) {
 
                 mDatabaseRef.child("users").child(gelenKullaniciBilgileri.user_id!!).child("user_detail").child("web_site").setValue(view.etWebSite.text.toString())
+                kullaniciGüncellendiMi = true
+            }
+
+            if (profilPhotoUri != null) {
+
+                var dialogYukleniyor = YukleniyorFragment()
+                dialogYukleniyor.show(activity!!.supportFragmentManager, "yukleniyorFragmenti")
+
+
+                mStorage.child("users").child(gelenKullaniciBilgileri.user_id!!).child("profile_picture").putFile(profilPhotoUri!!) // burada fotografı kaydettik veritabanına.
+                    .addOnSuccessListener { UploadTask ->
+                        UploadTask.storage.downloadUrl.addOnSuccessListener { itUri ->
+
+                            val downloadUrl = itUri.toString()
+
+                            ////////////Burada storageden veriyi databaseye attık.
+                            mDatabaseRef.child("users").child(gelenKullaniciBilgileri.user_id!!).child("user_detail").child("profile_picture").setValue(downloadUrl)
+                                .addOnCompleteListener { p0 ->
+
+                                    if (p0.isSuccessful) {
+                                        dialogYukleniyor.dismiss()
+                                        kullaniciGüncellendiMi = true
+                                    } else {
+
+                                        Toast.makeText(activity, "Resim Yüklenemedi", Toast.LENGTH_LONG).show()
+
+                                    }
+
+                                }
+
+                        }
+                    }
+
+
             }
 
             if (!gelenKullaniciBilgileri!!.user_name!!.equals(view.etUserName.text.toString())) {
@@ -87,7 +135,7 @@ class ProfileEditFragment : Fragment() {
 
                             var okunanKullanici = user.getValue(Users::class.java)!!.user_name
 
-                            if (!okunanKullanici!!.equals(view.etUserName.text.toString())) {
+                            if (okunanKullanici!!.equals(view.etUserName.text.toString())) {
 
                                 userNameKullanimdaMi = true
                                 Toast.makeText(activity, "kullanıcı adı kullanımda", Toast.LENGTH_SHORT).show()
@@ -95,19 +143,24 @@ class ProfileEditFragment : Fragment() {
                                 break
 
                             } else {
-
+                                userNameKullanimdaMi = false
                             }
                         }
 
-                        if (userNameKullanimdaMi==false){
+                        if (userNameKullanimdaMi == false) {
                             mDatabaseRef.child("users").child(gelenKullaniciBilgileri.user_id!!).child("user_name").setValue(view.etUserName.text.toString())
-
+                            Toast.makeText(activity, "Kullanıcı Adı Güncellendi...", Toast.LENGTH_SHORT).show()
+                            kullaniciGüncellendiMi = true
                         }
 
                     }
 
 
                 })
+
+            }
+            if (kullaniciGüncellendiMi == true) {
+                Toast.makeText(activity, "Kullanıcı Güncellendi...", Toast.LENGTH_SHORT).show()
 
             }
         }
@@ -120,8 +173,8 @@ class ProfileEditFragment : Fragment() {
 
         if (requestCode == RESIM_SEC && resultCode == AppCompatActivity.RESULT_OK && data!!.data != null) {
 
-            var profilResimURL = data!!.data
-            circleProfileImage.setImageURI(profilResimURL)
+            profilPhotoUri = data!!.data
+            circleProfileImage.setImageURI(profilPhotoUri)
 
         }
 
