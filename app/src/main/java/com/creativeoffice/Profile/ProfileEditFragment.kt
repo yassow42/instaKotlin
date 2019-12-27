@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -17,18 +16,14 @@ import androidx.appcompat.app.AppCompatActivity
 import com.creativeoffice.instakotlin.R
 import com.creativeoffice.utils.EventbusDataEvents
 import com.creativeoffice.utils.UniversalImageLoader
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.OnFailureListener
-import com.google.android.gms.tasks.Task
 import com.google.firebase.database.*
+import com.google.firebase.database.snapshot.BooleanNode
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import com.google.firebase.storage.UploadTask
 import kotlinx.android.synthetic.main.fragment_profile_edit.*
 import kotlinx.android.synthetic.main.fragment_profile_edit.view.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
-import java.lang.Exception
 
 
 class ProfileEditFragment : Fragment() {
@@ -70,30 +65,12 @@ class ProfileEditFragment : Fragment() {
         }
 
         view.imgBtnDegisiklikleriKaydet.setOnClickListener {
-            var kullaniciGüncellendiMi = false
-
-            if (!gelenKullaniciBilgileri!!.adi_soyadi.equals(view.etProfileName.text.toString())) {
-                mDatabaseRef.child("users").child(gelenKullaniciBilgileri.user_id!!).child("adi_soyadi").setValue(view.etProfileName.text.toString())
-                kullaniciGüncellendiMi = true
-            }
-            //  if (gelenKullaniciBilgileri.user_detail!!.biography!!.isNotEmpty()) {
-            if (!gelenKullaniciBilgileri.user_detail!!.biography.equals(view.etUserBio.text.toString())) {
-                mDatabaseRef.child("users").child(gelenKullaniciBilgileri.user_id!!).child("user_detail").child("biography").setValue(view.etUserBio.text.toString())
-                kullaniciGüncellendiMi = true
-            }
-            //  if (gelenKullaniciBilgileri.user_detail!!.web_site!!.isNotEmpty()) {
-
-            if (!gelenKullaniciBilgileri.user_detail!!.web_site.equals(view.etWebSite.text.toString())) {
-
-                mDatabaseRef.child("users").child(gelenKullaniciBilgileri.user_id!!).child("user_detail").child("web_site").setValue(view.etWebSite.text.toString())
-                kullaniciGüncellendiMi = true
-            }
 
             if (profilPhotoUri != null) {
 
                 var dialogYukleniyor = YukleniyorFragment()
                 dialogYukleniyor.show(activity!!.supportFragmentManager, "yukleniyorFragmenti")
-
+                dialogYukleniyor.isCancelable = false
 
                 mStorage.child("users").child(gelenKullaniciBilgileri.user_id!!).child("profile_picture").putFile(profilPhotoUri!!) // burada fotografı kaydettik veritabanına.
                     .addOnSuccessListener { UploadTask ->
@@ -107,65 +84,109 @@ class ProfileEditFragment : Fragment() {
 
                                     if (p0.isSuccessful) {
                                         dialogYukleniyor.dismiss()
-                                        kullaniciGüncellendiMi = true
+
+                                        kullaniciAdiniGuncelle(view, true)
+
                                     } else {
-
-                                        Toast.makeText(activity, "Resim Yüklenemedi", Toast.LENGTH_LONG).show()
-
+                                    //    Toast.makeText(activity, "Resim Yüklenemedi", Toast.LENGTH_LONG).show()
+                                        kullaniciAdiniGuncelle(view, false)
                                     }
-
                                 }
-
                         }
                     }
-
-
-            }
-
-            if (!gelenKullaniciBilgileri!!.user_name!!.equals(view.etUserName.text.toString())) {
-                mDatabaseRef.child("users").orderByChild("user_name").addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onCancelled(p0: DatabaseError) {
-
-                    }
-
-                    override fun onDataChange(p0: DataSnapshot) {
-                        var userNameKullanimdaMi = false
-
-                        for (user in p0.children) {
-
-                            var okunanKullanici = user.getValue(Users::class.java)!!.user_name
-
-                            if (okunanKullanici!!.equals(view.etUserName.text.toString())) {
-
-                                userNameKullanimdaMi = true
-                                Toast.makeText(activity, "kullanıcı adı kullanımda", Toast.LENGTH_SHORT).show()
-                                // mDatabaseRef.child("users").child(gelenKullaniciBilgileri.user_id!!).child("user_name").setValue(view.etUserName.text.toString())
-                                break
-
-                            } else {
-                                userNameKullanimdaMi = false
-                            }
-                        }
-
-                        if (userNameKullanimdaMi == false) {
-                            mDatabaseRef.child("users").child(gelenKullaniciBilgileri.user_id!!).child("user_name").setValue(view.etUserName.text.toString())
-                            Toast.makeText(activity, "Kullanıcı Adı Güncellendi...", Toast.LENGTH_SHORT).show()
-                            kullaniciGüncellendiMi = true
-                        }
-
-                    }
-
-
-                })
-
-            }
-            if (kullaniciGüncellendiMi == true) {
-                Toast.makeText(activity, "Kullanıcı Güncellendi...", Toast.LENGTH_SHORT).show()
-
+            } else {
+                kullaniciAdiniGuncelle(view, null)
             }
         }
 
         return view
+    }
+
+    // true ise resim yuklenmıs
+    //false ise resım yuklenemdı
+    // null ise degsıtırmek ıstemedı
+    private fun kullaniciAdiniGuncelle(view: View, profilResmiDegisti: Boolean?) {
+
+        if (!gelenKullaniciBilgileri!!.user_name!!.equals(view.etUserName.text.toString())) {
+            mDatabaseRef.child("users").orderByChild("user_name").addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onCancelled(p0: DatabaseError) {
+
+                }
+
+                override fun onDataChange(p0: DataSnapshot) {
+                    var userNameKullanimdaMi = false
+
+                    for (user in p0.children) {
+
+                        var okunanKullanici = user.getValue(Users::class.java)!!.user_name
+
+                        if (okunanKullanici!!.equals(view.etUserName.text.toString())) {
+
+                            userNameKullanimdaMi = true
+                            profilBilgileriniGuncelle(view, profilResmiDegisti, false)
+                          //  Toast.makeText(activity, "kullanıcı adı kullanımda", Toast.LENGTH_SHORT).show()
+                            break
+
+                        } else {
+                            userNameKullanimdaMi = false
+                        }
+                    }
+
+                    if (userNameKullanimdaMi == false) {
+                        mDatabaseRef.child("users").child(gelenKullaniciBilgileri.user_id!!).child("user_name").setValue(view.etUserName.text.toString())
+                      //  Toast.makeText(activity, "Kullanıcı Adı Güncellendi...", Toast.LENGTH_SHORT).show()
+                        profilBilgileriniGuncelle(view, profilResmiDegisti, true)
+
+                    }
+
+                }
+
+
+            })
+
+        } else {
+            profilBilgileriniGuncelle(view, profilResmiDegisti, null)
+
+        }
+
+    }
+
+    private fun profilBilgileriniGuncelle(view: View, profilResmiDegisti: Boolean?, userNameDegisti: Boolean?) {
+        var profilGüncellendiMi:Boolean? = null
+        if (!gelenKullaniciBilgileri!!.adi_soyadi.equals(view.etProfileName.text.toString())) {
+            mDatabaseRef.child("users").child(gelenKullaniciBilgileri.user_id!!).child("adi_soyadi").setValue(view.etProfileName.text.toString())
+            profilGüncellendiMi = true
+        }
+        //  if (gelenKullaniciBilgileri.user_detail!!.biography!!.isNotEmpty()) {
+        if (!gelenKullaniciBilgileri.user_detail!!.biography.equals(view.etUserBio.text.toString())) {
+            mDatabaseRef.child("users").child(gelenKullaniciBilgileri.user_id!!).child("user_detail").child("biography").setValue(view.etUserBio.text.toString())
+            profilGüncellendiMi = true
+        }
+        //  if (gelenKullaniciBilgileri.user_detail!!.web_site!!.isNotEmpty()) {
+
+        if (!gelenKullaniciBilgileri.user_detail!!.web_site.equals(view.etWebSite.text.toString())) {
+
+            mDatabaseRef.child("users").child(gelenKullaniciBilgileri.user_id!!).child("user_detail").child("web_site").setValue(view.etWebSite.text.toString())
+            profilGüncellendiMi = true
+        }
+
+
+
+        if (profilResmiDegisti == null && userNameDegisti== null && profilGüncellendiMi==null){
+            Toast.makeText(activity, "Degisiklik yok", Toast.LENGTH_SHORT).show()
+        }else if ( userNameDegisti == false && (profilResmiDegisti == true || profilGüncellendiMi == true)){
+            Toast.makeText(activity, "Kullanıcı Bilgiler Güncellendi ama kullanıcı adı kullanımda", Toast.LENGTH_SHORT).show()
+
+        }else if(userNameDegisti==false){
+            Toast.makeText(activity, "Kullanıcı adı kullanımda", Toast.LENGTH_SHORT).show()
+
+        }
+        else{
+
+            Toast.makeText(activity, "Kullanıcı Güncellendi", Toast.LENGTH_SHORT).show()
+            activity!!.onBackPressed()
+
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
