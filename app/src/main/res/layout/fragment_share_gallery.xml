@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/mavi"
     tools:context="com.creativeoffice.Share.ShareGalleryFragment">
 
 
@@ -81,11 +80,13 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <GridView
+            android:id="@+id/gridResimler"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:numColumns="4"
+            android:gravity="center"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-
             app:layout_constraintHeight_percent="0.4"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imageView3" />

@@ -1,6 +1,7 @@
 package com.creativeoffice.Share
 
 
+import android.content.Context
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
@@ -8,14 +9,18 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 
 import com.creativeoffice.instakotlin.R
 import com.creativeoffice.utils.DosyaIslemleri
+import com.creativeoffice.utils.ShareActivityGridViewAdapter
+import kotlinx.android.synthetic.main.fragment_share_gallery.*
 import kotlinx.android.synthetic.main.fragment_share_gallery.view.*
 
 class ShareGalleryFragment : Fragment() {
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,18 +34,20 @@ class ShareGalleryFragment : Fragment() {
         var klasorPaths = ArrayList<String>()
         var klasorAdlari = ArrayList<String>()
 
-        var root =  Environment!!.getExternalFilesDir().path
+        var root =  Environment.getExternalStorageDirectory().path
 
 
-        val kameraResimleri = root + "/DCIM/Camera"
-        val indirilenResimler = root + "/Download"
-        var whatsapResimleri = root + "/WhatsApp/Media/WhatsApp Images"
+        var kameraResimleri= root+"/DCIM/Camera"
+        var indirilenResimler=root+"/Download"
+        var whatsappResimleri=root+"/WhatsApp/Media/WhatsApp Images"
 
         Log.e("Hata", kameraResimleri)
+        Log.e("Hata", whatsappResimleri)
+        Log.e("Hata", indirilenResimler)
 
         klasorPaths.add(kameraResimleri)
         klasorPaths.add(indirilenResimler)
-        klasorPaths.add(whatsapResimleri)
+        klasorPaths.add(whatsappResimleri)
 
 
         klasorAdlari.add("Kamera")
@@ -53,13 +60,29 @@ class ShareGalleryFragment : Fragment() {
         view.spnKlasorAdlari.adapter = spinnerArrayAdapter
         view.spnKlasorAdlari.setSelection(0)
 
+        view.spnKlasorAdlari.onItemSelectedListener = object :AdapterView.OnItemSelectedListener{
+            override fun onNothingSelected(parent: AdapterView<*>?) {
 
-        var klasordekiDosyalar = DosyaIslemleri.klasordekiDosyalariGetir(kameraResimleri)
+            }
 
-        for (str in klasordekiDosyalar) {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                var klasordekiDosyalar = DosyaIslemleri.klasordekiDosyalariGetir(kameraResimleri)
 
-            Log.e("Hata", str)
+                var gridAdapter = ShareActivityGridViewAdapter(activity!!,R.layout.tek_satir_grid_resim,klasordekiDosyalar)
+
+                gridResimler.adapter=gridAdapter
+
+               /* for (str in klasordekiDosyalar) {
+
+                    Log.e("Hata", str)
+                }
+                */
+            }
+
         }
+
+
+
 
         return view
     }
