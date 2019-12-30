@@ -51,7 +51,7 @@ class DosyaIslemleri {
 
                         var dosyaTuru = okunanDosyaYolu.substring(okunanDosyaYolu.lastIndexOf(".")) //nokta dahil olarak okur.
 
-                        Log.e("Hata", "okunan dosya turu " + dosyaTuru)
+                       Log.e("Hata", "okunan dosya turu " + dosyaTuru)
 
                         if (dosyaTuru.equals(".jpg") || dosyaTuru.equals(".jpeg") || dosyaTuru.equals(".mp4")) {
 

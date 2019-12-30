@@ -2,6 +2,7 @@ package com.creativeoffice.Share
 
 
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
@@ -30,7 +31,6 @@ class ShareGalleryFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_share_gallery, container, false)
 
-        Toast.makeText(activity, "galeri", Toast.LENGTH_LONG).show()
 
         var klasorPaths = ArrayList<String>()
         var klasorAdlari = ArrayList<String>()
@@ -41,6 +41,7 @@ class ShareGalleryFragment : Fragment() {
         var kameraResimleri = root + "/DCIM/Camera"
         var indirilenResimler = root + "/Download"
         var whatsappResimleri = root + "/WhatsApp/Media/WhatsApp Images"
+        var videolar = root + "/Video"
 
         Log.e("Hata", kameraResimleri)
         Log.e("Hata", whatsappResimleri)
@@ -49,17 +50,21 @@ class ShareGalleryFragment : Fragment() {
         klasorPaths.add(kameraResimleri)
         klasorPaths.add(indirilenResimler)
         klasorPaths.add(whatsappResimleri)
+        klasorPaths.add(videolar)
 
 
         klasorAdlari.add("Kamera")
         klasorAdlari.add("İndirilenler")
         klasorAdlari.add("WhatsApp")
+        klasorAdlari.add("Videolar")
 
 
         var spinnerArrayAdapter = ArrayAdapter(activity!!, android.R.layout.simple_list_item_1, klasorAdlari)
         spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_list_item_1)
         view.spnKlasorAdlari.adapter = spinnerArrayAdapter
         view.spnKlasorAdlari.setSelection(0)
+
+        //ilk acıldıgında en son dosya gosterilir.
 
         view.spnKlasorAdlari.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -83,16 +88,49 @@ class ShareGalleryFragment : Fragment() {
         var gridAdapter = ShareActivityGridViewAdapter(activity!!, R.layout.tek_satir_grid_resim, secilenKlasordekiDosyalar)
 
         gridResimler.adapter = gridAdapter
+        if (secilenKlasordekiDosyalar.size>0){
+            resimVeyaVideoGoster(secilenKlasordekiDosyalar.get(0))
 
+        }else {
+            videoView.visibility = View.INVISIBLE
+            imgCropView.visibility=View.INVISIBLE
 
-        gridResimler.setOnItemClickListener(object :AdapterView.OnItemClickListener{
+        }
+
+        gridResimler.setOnItemClickListener(object : AdapterView.OnItemClickListener {
             override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
 
+                resimVeyaVideoGoster(secilenKlasordekiDosyalar.get(position))
 
-                UniversalImageLoader.setImage("file:/"+secilenKlasordekiDosyalar.get(position),imgBuyukResim,pbImgBuyukResim)
+
             }
 
         })
+
+
+    }
+
+    fun resimVeyaVideoGoster(dosyaYolu: String) {
+
+        var dosyaTuru = dosyaYolu.substring(dosyaYolu.lastIndexOf("."))
+
+        if (dosyaTuru != null) {
+
+            if (dosyaTuru.equals(".mp4")) {
+                videoView.visibility = View.VISIBLE
+                imgCropView.visibility = View.INVISIBLE
+                videoView.setVideoURI(Uri.parse("file://" + dosyaYolu))
+                videoView.start()
+                pbImgBuyukResim.visibility = View.GONE
+
+            } else {
+                videoView.visibility = View.INVISIBLE
+                imgCropView.visibility = View.VISIBLE
+
+                UniversalImageLoader.setImage("file:/" + dosyaYolu, imgCropView, pbImgBuyukResim)
+            }
+
+        }
 
 
     }

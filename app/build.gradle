@@ -49,6 +49,8 @@ dependencies {
     implementation 'org.greenrobot:eventbus:3.1.1'
     //video
     implementation 'com.linsea:universalvideoview:1.1.0@aar'
+    //crop ımage view
+    implementation "com.naver.android.helloyako:imagecropview:1.2.3"
 
 
 
