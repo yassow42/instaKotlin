@@ -16,6 +16,7 @@ import android.widget.Toast
 import com.creativeoffice.instakotlin.R
 import com.creativeoffice.utils.DosyaIslemleri
 import com.creativeoffice.utils.ShareActivityGridViewAdapter
+import com.creativeoffice.utils.UniversalImageLoader
 import kotlinx.android.synthetic.main.fragment_share_gallery.*
 import kotlinx.android.synthetic.main.fragment_share_gallery.view.*
 
@@ -82,6 +83,16 @@ class ShareGalleryFragment : Fragment() {
         var gridAdapter = ShareActivityGridViewAdapter(activity!!, R.layout.tek_satir_grid_resim, secilenKlasordekiDosyalar)
 
         gridResimler.adapter = gridAdapter
+
+
+        gridResimler.setOnItemClickListener(object :AdapterView.OnItemClickListener{
+            override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+
+
+                UniversalImageLoader.setImage("file:/"+secilenKlasordekiDosyalar.get(position),imgBuyukResim,pbImgBuyukResim)
+            }
+
+        })
 
 
     }

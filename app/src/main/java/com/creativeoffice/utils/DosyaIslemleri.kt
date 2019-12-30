@@ -2,6 +2,9 @@ package com.creativeoffice.utils
 
 import android.util.Log
 import java.io.File
+import java.util.*
+import kotlin.Comparator
+import kotlin.collections.ArrayList
 
 class DosyaIslemleri {
 
@@ -10,7 +13,6 @@ class DosyaIslemleri {
         fun klasordekiDosyalariGetir(klasorAdi: String): ArrayList<String> {//demek ki arraylist olarak birşey donmeli
 
             var tumDosyalar = ArrayList<String>()
-
 
 
             var file = File(klasorAdi) //Bu File() ile okuyoruz. altta da tum dosyaları liste olarak atıyor..
@@ -22,19 +24,34 @@ class DosyaIslemleri {
             //gonderdigimiz klasor yolunda eleman var mı yok mu
             if (klasordekiTumDosyalar != null) {
 
-                for (i in 0 .. klasordekiTumDosyalar.size-1) {
+                if (klasordekiTumDosyalar.size > 1) { // burada dosyaları tarihe gore sıraladık ozel bır metod burası
+
+                    Arrays.sort(klasordekiTumDosyalar, object : Comparator<File> {
+                        override fun compare(o1: File?, o2: File?): Int {
+
+                            if (o1!!.lastModified() > o2!!.lastModified()) {
+                                return -1
+                            } else {
+                                return 1
+                            }
+                        }
+
+                    })
+                }
+
+                for (i in 0..klasordekiTumDosyalar.size - 1) {
                     if (klasordekiTumDosyalar[i].isFile) {
 
-                        Log.e("Hata","okunan veri bir dosya")
+                        Log.e("Hata", "okunan veri bir dosya")
 
                         //files://root/logo.png absolutepath alıyor
                         var okunanDosyaYolu = klasordekiTumDosyalar[i].absolutePath
 
-                        Log.e("Hata","okunan dosya yolu " + okunanDosyaYolu)
+                        Log.e("Hata", "okunan dosya yolu " + okunanDosyaYolu)
 
                         var dosyaTuru = okunanDosyaYolu.substring(okunanDosyaYolu.lastIndexOf(".")) //nokta dahil olarak okur.
 
-                       Log.e("Hata","okunan dosya turu " + dosyaTuru)
+                        Log.e("Hata", "okunan dosya turu " + dosyaTuru)
 
                         if (dosyaTuru.equals(".jpg") || dosyaTuru.equals(".jpeg") || dosyaTuru.equals(".mp4")) {
 
@@ -42,7 +59,7 @@ class DosyaIslemleri {
                         }
                     }
                 }
-            }else{
+            } else {
                 Log.e("Hata", "Klasorler Bos")
             }
 
