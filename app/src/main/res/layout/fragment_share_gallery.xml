@@ -80,6 +80,8 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <GridView
+            android:verticalSpacing="1dp"
+            android:horizontalSpacing="1dp"
             android:id="@+id/gridResimler"
             android:layout_width="0dp"
             android:layout_height="0dp"
