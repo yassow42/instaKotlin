@@ -53,5 +53,4 @@ dependencies {
     implementation "com.naver.android.helloyako:imagecropview:1.2.3"
 
 
-
 }

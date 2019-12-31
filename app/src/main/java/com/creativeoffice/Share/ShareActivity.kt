@@ -2,6 +2,7 @@ package com.creativeoffice.Share
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import com.creativeoffice.instakotlin.R
 import com.creativeoffice.utils.BottomnavigationViewHelper
 import com.creativeoffice.utils.SharePagerAdapter
@@ -41,6 +42,15 @@ class ShareActivity : AppCompatActivity() {
 
         shareTabLayout.setupWithViewPager(shareViewPager)
 
+    }
+
+    override fun onBackPressed() {
+
+        anaLayout.visibility= View.VISIBLE
+        fragmentContainerLayout.visibility=View.GONE
+
+
+        super.onBackPressed()
     }
 
 

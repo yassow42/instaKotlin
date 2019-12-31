@@ -262,9 +262,7 @@ class KayitFragment : Fragment() {
             ).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
             startActivity(intent)
         }
-
         //kullanıcı e mail ile kaydolma ıstyr
-
 
         return view
     }

@@ -12,23 +12,26 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Toast
 
 import com.creativeoffice.instakotlin.R
 import com.creativeoffice.utils.DosyaIslemleri
+import com.creativeoffice.utils.EventbusDataEvents
 import com.creativeoffice.utils.ShareActivityGridViewAdapter
 import com.creativeoffice.utils.UniversalImageLoader
+import kotlinx.android.synthetic.main.activity_share.*
 import kotlinx.android.synthetic.main.fragment_share_gallery.*
 import kotlinx.android.synthetic.main.fragment_share_gallery.view.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 
 class ShareGalleryFragment : Fragment() {
 
-
+    var secilenResimYolu: String? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
+
         val view = inflater.inflate(R.layout.fragment_share_gallery, container, false)
 
 
@@ -77,29 +80,45 @@ class ShareGalleryFragment : Fragment() {
 
         }
 
+        view.tvİleriButton.setOnClickListener {
+            activity!!.anaLayout.visibility = View.GONE
+            activity!!.fragmentContainerLayout.visibility = View.VISIBLE
+            val transaction = activity!!.supportFragmentManager.beginTransaction()
+            ////////////////////// EventBus yayın yaptık.
+            EventBus.getDefault().postSticky(EventbusDataEvents.PaylasilacakResmiGonder(secilenResimYolu))
+            //////////////////////
+            transaction.addToBackStack("ShareNexteklendi")
+            transaction.replace(R.id.fragmentContainerLayout, ShareNextFragment())
+            transaction.commit()
+
+
+        }
+
 
 
 
         return view
     }
 
+
     fun setupGridView(secilenKlasordekiDosyalar: ArrayList<String>) {
 
         var gridAdapter = ShareActivityGridViewAdapter(activity!!, R.layout.tek_satir_grid_resim, secilenKlasordekiDosyalar)
 
         gridResimler.adapter = gridAdapter
-        if (secilenKlasordekiDosyalar.size>0){
+        if (secilenKlasordekiDosyalar.size > 0) {
+            secilenResimYolu = secilenKlasordekiDosyalar.get(0)
             resimVeyaVideoGoster(secilenKlasordekiDosyalar.get(0))
 
-        }else {
+        } else {
             videoView.visibility = View.INVISIBLE
-            imgCropView.visibility=View.INVISIBLE
+            imgCropView.visibility = View.INVISIBLE
 
         }
 
         gridResimler.setOnItemClickListener(object : AdapterView.OnItemClickListener {
             override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-
+                secilenResimYolu = secilenKlasordekiDosyalar.get(position)
                 resimVeyaVideoGoster(secilenKlasordekiDosyalar.get(position))
 
 
@@ -134,4 +153,8 @@ class ShareGalleryFragment : Fragment() {
 
 
     }
+
+
+
+
 }

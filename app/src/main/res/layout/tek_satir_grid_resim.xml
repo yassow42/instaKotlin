@@ -2,8 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
 
     <com.creativeoffice.utils.GridImageView
         android:id="@+id/imgTekSutunImage"
@@ -27,4 +27,16 @@
         app:layout_constraintEnd_toEndOf="@+id/imgTekSutunImage"
         app:layout_constraintStart_toStartOf="@+id/imgTekSutunImage"
         app:layout_constraintTop_toTopOf="@+id/imgTekSutunImage" />
+
+    <TextView
+        android:id="@+id/tvSure"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/siyahGolge"
+        android:text="TextView"
+        android:textColor="@color/beyaz"
+        android:textSize="8sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/imgTekSutunImage"
+        app:layout_constraintEnd_toEndOf="@+id/imgTekSutunImage" />
 </androidx.constraintlayout.widget.ConstraintLayout>

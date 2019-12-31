@@ -102,14 +102,7 @@ class ProfileActivity : AppCompatActivity() {
 
     }
 
-    private fun setupProfilePhoto() {
-
-        val imgURl = "https://i.imgyukle.com/2019/12/21/R6ekHS.jpg"
-
-
-        UniversalImageLoader.setImage(imgURl, circleProfileImage, mProgressBarActivityProfile)
-
-    }
+   
 
 
     override fun onBackPressed() {
