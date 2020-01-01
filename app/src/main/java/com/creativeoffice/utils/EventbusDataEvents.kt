@@ -14,6 +14,6 @@ class EventbusDataEvents {
 
     internal class KullaniciBilgileriniGonder(var kullanici: Users?)
 
-    internal class PaylasilacakResmiGonder(var resimYol:String?)
+    internal class PaylasilacakResmiGonder(var resimYol:String?,var dosyaTuruResimMi:Boolean?)
 
 }

@@ -27,6 +27,8 @@ import org.greenrobot.eventbus.Subscribe
 class ShareGalleryFragment : Fragment() {
 
     var secilenResimYolu: String? = null
+    var dosyaTuruResimMi:Boolean?=null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -85,12 +87,15 @@ class ShareGalleryFragment : Fragment() {
             activity!!.fragmentContainerLayout.visibility = View.VISIBLE
             val transaction = activity!!.supportFragmentManager.beginTransaction()
             ////////////////////// EventBus yayın yaptık.
-            EventBus.getDefault().postSticky(EventbusDataEvents.PaylasilacakResmiGonder(secilenResimYolu))
+            EventBus.getDefault().postSticky(EventbusDataEvents.PaylasilacakResmiGonder(secilenResimYolu, dosyaTuruResimMi))
             //////////////////////
             transaction.addToBackStack("ShareNexteklendi")
             transaction.replace(R.id.fragmentContainerLayout, ShareNextFragment())
             transaction.commit()
 
+
+        }
+        view.imgGeri.setOnClickListener {
 
         }
 
@@ -142,11 +147,14 @@ class ShareGalleryFragment : Fragment() {
                 videoView.start()
                 pbImgBuyukResim.visibility = View.GONE
 
+                dosyaTuruResimMi =false
+
             } else {
                 videoView.visibility = View.INVISIBLE
                 imgCropView.visibility = View.VISIBLE
 
                 UniversalImageLoader.setImage("file:/" + dosyaYolu, imgCropView, pbImgBuyukResim)
+                dosyaTuruResimMi = true
             }
 
         }
