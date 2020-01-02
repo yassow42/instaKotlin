@@ -93,6 +93,7 @@ class ShareGalleryFragment : Fragment() {
             transaction.replace(R.id.fragmentContainerLayout, ShareNextFragment())
             transaction.commit()
 
+            videoViewGaleri.stopPlayback()
 
         }
         view.imgGeri.setOnClickListener {
@@ -116,7 +117,7 @@ class ShareGalleryFragment : Fragment() {
             resimVeyaVideoGoster(secilenKlasordekiDosyalar.get(0))
 
         } else {
-            videoView.visibility = View.INVISIBLE
+            videoViewGaleri.visibility = View.INVISIBLE
             imgCropView.visibility = View.INVISIBLE
 
         }
@@ -141,16 +142,16 @@ class ShareGalleryFragment : Fragment() {
         if (dosyaTuru != null) {
 
             if (dosyaTuru.equals(".mp4")) {
-                videoView.visibility = View.VISIBLE
+                videoViewGaleri.visibility = View.VISIBLE
                 imgCropView.visibility = View.INVISIBLE
-                videoView.setVideoURI(Uri.parse("file://" + dosyaYolu))
-                videoView.start()
+                videoViewGaleri.setVideoURI(Uri.parse("file://" + dosyaYolu))
+                videoViewGaleri.start()
                 pbImgBuyukResim.visibility = View.GONE
 
                 dosyaTuruResimMi =false
 
             } else {
-                videoView.visibility = View.INVISIBLE
+                videoViewGaleri.visibility = View.INVISIBLE
                 imgCropView.visibility = View.VISIBLE
 
                 UniversalImageLoader.setImage("file:/" + dosyaYolu, imgCropView, pbImgBuyukResim)

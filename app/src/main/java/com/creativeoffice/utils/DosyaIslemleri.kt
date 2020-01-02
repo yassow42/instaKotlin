@@ -47,16 +47,16 @@ class DosyaIslemleri {
                 for (i in 0..klasordekiTumDosyalar.size - 1) {
                     if (klasordekiTumDosyalar[i].isFile) {
 
-                      //  Log.e("Hata", "okunan veri bir dosya")
+                        //  Log.e("Hata", "okunan veri bir dosya")
 
                         //files://root/logo.png absolutepath alıyor
                         var okunanDosyaYolu = klasordekiTumDosyalar[i].absolutePath
 
-                      //  Log.e("Hata", "okunan dosya yolu " + okunanDosyaYolu)
+                        //  Log.e("Hata", "okunan dosya yolu " + okunanDosyaYolu)
 
                         var dosyaTuru = okunanDosyaYolu.substring(okunanDosyaYolu.lastIndexOf(".")) //nokta dahil olarak okur.
 
-                      //  Log.e("Hata", "okunan dosya turu " + dosyaTuru)
+                        //  Log.e("Hata", "okunan dosya turu " + dosyaTuru)
 
                         if (dosyaTuru.equals(".jpg") || dosyaTuru.equals(".jpeg") || dosyaTuru.equals(".mp4")) {
 
@@ -74,12 +74,54 @@ class DosyaIslemleri {
             return tumDosyalar
         }
 
-        fun compressResimDosya(fragment: Fragment, secilenResimYolu: String) {
-            ResimCompressAsyncTask(fragment).execute(secilenResimYolu)
+        fun compressResimDosya(fragment: Fragment, secilenDosyaYolu: String) {
+            ResimCompressAsyncTask(fragment).execute(secilenDosyaYolu)
 
         }
+
+        fun compressVideoDosya(fragment: Fragment, secilenDosyaYolu: String) {
+            VideoCompressAsyncTask(fragment).execute(secilenDosyaYolu)//"1"
+
+        }
+
+
     }
 
+    internal class VideoCompressAsyncTask(fragment: Fragment) : AsyncTask<String, String, String>() {
+        var myFragment = fragment
+        var compressFragment = YukleniyorFragment()
+
+        override fun onPreExecute() {
+            compressFragment.show(myFragment.activity!!.supportFragmentManager, "compress dıalog basladı")
+            compressFragment.isCancelable = false
+
+            super.onPreExecute()
+        }
+
+        override fun doInBackground(vararg params: String?): String? {
+            var yeniOlusanDosyaKlasor = File(Environment.getExternalStorageDirectory().absolutePath + "/DCIM/TestKlasor/compressedVideo/")
+
+            if (yeniOlusanDosyaKlasor.isDirectory || yeniOlusanDosyaKlasor.mkdirs()) {
+
+               var yeniOlusturulanVideoDosyası = SiliCompressor.with(myFragment.context).compressVideo(params[0], yeniOlusanDosyaKlasor.path) ///"1" execute ile gelen veri params olarak
+                // doInbackfround ıcınde sıkıstırılacak
+                return yeniOlusturulanVideoDosyası
+
+            }
+
+            compressFragment.dismiss()
+            return null
+        }
+
+        override fun onPostExecute(yeniOlusturulanVideoDosyası: String?) {
+            if (!yeniOlusturulanVideoDosyası.isNullOrEmpty()){
+                (myFragment as ShareNextFragment).uploadStoage(yeniOlusturulanVideoDosyası)
+            }
+            compressFragment.dismiss()
+            super.onPostExecute(yeniOlusturulanVideoDosyası)
+        }
+
+    }
 
     internal class ResimCompressAsyncTask(fragment: Fragment) : AsyncTask<String, String, String>() {
         var myFragment = fragment
@@ -98,19 +140,18 @@ class DosyaIslemleri {
         override fun doInBackground(vararg params: String?): String {
             var yeniOlusanDosyaKlasor = File(Environment.getExternalStorageDirectory().absolutePath + "/DCIM/TestKlasor/compressed/") // sıkısan dosyanın kaydedılecegı yer."1"
             //yeniDosyayolu bize kaydedilen yolu veriyor.
-            var yeniDosyaYolu = SiliCompressor.with(myFragment.context).compress(params[0], yeniOlusanDosyaKlasor) //burada sıkıstırdık. ve ılgılı "1" dosyaya kaydettık
+            var yeniSıkısmısResimDosyaYolu = SiliCompressor.with(myFragment.context).compress(params[0], yeniOlusanDosyaKlasor) //burada sıkıstırdık. ve ılgılı "1" dosyaya kaydettık
 
             compressFragment.dismiss()
-            return yeniDosyaYolu
+            return yeniSıkısmısResimDosyaYolu
         }
+
         //yeni dosya returnu alttakı resulta donuyor cunku "2" de yazdıgı gıbı sıkıstırma bıttıgnde burası calısıyor.
-        override fun onPostExecute(filePath: String?) {
+        override fun onPostExecute(sıkısmısResimDosyaYolu: String?) {
             compressFragment.dismiss()
-            Log.e("Hata","yenı dosyanın adı."+filePath)
-
-            (myFragment as ShareNextFragment).uploadStoage(filePath)
-
-            super.onPostExecute(filePath)
+            Log.e("Hata", "yenı dosyanın adı." + sıkısmısResimDosyaYolu)
+            (myFragment as ShareNextFragment).uploadStoage(sıkısmısResimDosyaYolu)
+            super.onPostExecute(sıkısmısResimDosyaYolu)
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.creativeoffice.utils
 
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
@@ -25,5 +26,17 @@ class SharePagerAdapter(fm: FragmentManager,tabAdlari:ArrayList<String>) : Fragm
 
     override fun getPageTitle(position: Int): CharSequence? {
         return mTabAdlari.get(position)
+    }
+
+
+    fun secilenFragmentiViewPagerdanSil(viewGroup: ViewGroup, position: Int){
+
+        var silinecekFragment = this.instantiateItem(viewGroup,position)
+        this.destroyItem(viewGroup,position,silinecekFragment)
+    }
+
+    fun secilenFragmentıViewPageraEkle(viewGroup: ViewGroup,position: Int){
+
+
     }
 }

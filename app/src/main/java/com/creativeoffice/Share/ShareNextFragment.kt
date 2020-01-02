@@ -39,7 +39,7 @@ import java.lang.Exception
  * A simple [Fragment] subclass.
  */
 class ShareNextFragment : Fragment() {
-    var secilenResimYolu: String? = null
+    var secilenDosyaYolu: String? = null
     var dosyaTuruResimMi: Boolean? = null
 
     lateinit var photoURI: Uri
@@ -62,8 +62,8 @@ class ShareNextFragment : Fragment() {
         mRef = FirebaseDatabase.getInstance().reference
         mStorageReference = FirebaseStorage.getInstance().reference
 
-        UniversalImageLoader.setImage("file://" + secilenResimYolu!!, view!!.imageView3, view.progressBar2)
-        photoURI = Uri.parse("file://" + secilenResimYolu)
+        UniversalImageLoader.setImage("file://" + secilenDosyaYolu!!, view!!.imageView3, view.progressBar2)
+        photoURI = Uri.parse("file://" + secilenDosyaYolu)
 
 
 
@@ -72,13 +72,13 @@ class ShareNextFragment : Fragment() {
             //resim dosyası sıkıştırma
             if (dosyaTuruResimMi == true) {
 
-                DosyaIslemleri.compressResimDosya(this, secilenResimYolu!!)
+                DosyaIslemleri.compressResimDosya(this, secilenDosyaYolu!!)
 
 
             }//videoları sıkıstırır
             else if (dosyaTuruResimMi == false) {
 
-
+                DosyaIslemleri.compressVideoDosya(this, secilenDosyaYolu!!)
             }
 
 
@@ -104,8 +104,8 @@ class ShareNextFragment : Fragment() {
     //////////////////////eventbuss//////////////////////////
     @Subscribe(sticky = true)
 
-    internal fun onResimEvent(secilenResim: EventbusDataEvents.PaylasilacakResmiGonder) {
-        secilenResimYolu = secilenResim.resimYol
+    internal fun onDosyaEvent(secilenResim: EventbusDataEvents.PaylasilacakResmiGonder) {
+        secilenDosyaYolu = secilenResim.dosyaYol
         dosyaTuruResimMi = secilenResim.dosyaTuruResimMi
     }
 

@@ -9,6 +9,7 @@ import android.provider.Settings
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AlertDialog
+import androidx.viewpager.widget.ViewPager
 import com.creativeoffice.Login.LoginActivity
 import com.creativeoffice.instakotlin.R
 import com.creativeoffice.utils.BottomnavigationViewHelper
@@ -46,13 +47,70 @@ class ShareActivity : AppCompatActivity() {
 
     }
 
+
+    private fun setupShareViewPager() {
+        var tabAdlari = ArrayList<String>()
+        tabAdlari.add("Galeri")
+        tabAdlari.add("FOTOĞRAF")
+       // tabAdlari.add("VİDEO")
+
+
+        var sharePagerAdapter = SharePagerAdapter(supportFragmentManager, tabAdlari)
+        sharePagerAdapter.addFragment(ShareGalleryFragment())
+        sharePagerAdapter.addFragment(ShareCameraFragment())
+       // sharePagerAdapter.addFragment(ShareVideoFragment())
+
+        shareViewPager.adapter = sharePagerAdapter
+        shareViewPager.offscreenPageLimit = 1   //burada pagerler arası gecıslerde hepsi calısıyordu bunu arka ve onden 1 adet calıstır dıye sınırladık daha sonra addOnPagelıstener ıle de arkasında
+        // kı ve ondekı fragmentı kapatacagız kı cameralar aynı anda calısamasın....
+
+     /*   shareViewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+            override fun onPageScrollStateChanged(state: Int) {
+
+            }
+
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+
+            }
+
+            override fun onPageSelected(position: Int) {
+
+                if (position == 0) {
+
+                    sharePagerAdapter.secilenFragmentiViewPagerdanSil(shareViewPager,1)
+                    sharePagerAdapter.secilenFragmentiViewPagerdanSil(shareViewPager,2)
+                    sharePagerAdapter.secilenFragmentıViewPageraEkle(shareViewPager,0)
+
+                }
+                if (position == 1) {
+
+                    sharePagerAdapter.secilenFragmentiViewPagerdanSil(shareViewPager,0)
+                    sharePagerAdapter.secilenFragmentiViewPagerdanSil(shareViewPager,2)
+                    sharePagerAdapter.secilenFragmentıViewPageraEkle(shareViewPager,1)
+                }
+                if (position == 2) {
+
+                    sharePagerAdapter.secilenFragmentiViewPagerdanSil(shareViewPager,0)
+                    sharePagerAdapter.secilenFragmentiViewPagerdanSil(shareViewPager,1)
+                    sharePagerAdapter.secilenFragmentıViewPageraEkle(shareViewPager,2)
+                }
+
+            }
+
+
+        })*/
+        shareTabLayout.setupWithViewPager(shareViewPager)
+
+    }
+
     private fun strageVeKameraİzniİste() {
 
         Dexter.withActivity(this)
             .withPermissions(
                 android.Manifest.permission.READ_EXTERNAL_STORAGE,
                 android.Manifest.permission.CAMERA,
-                android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                android.Manifest.permission.RECORD_AUDIO
             )
             .withListener(object : MultiplePermissionsListener {
                 override fun onPermissionsChecked(report: MultiplePermissionsReport?) {
@@ -132,24 +190,6 @@ class ShareActivity : AppCompatActivity() {
 
     }
 
-    private fun setupShareViewPager() {
-        var tabAdlari = ArrayList<String>()
-        tabAdlari.add("Galeri")
-        tabAdlari.add("FOTOĞRAF")
-        tabAdlari.add("VİDEO")
-
-
-        var sharePagerAdapter = SharePagerAdapter(supportFragmentManager, tabAdlari)
-
-        sharePagerAdapter.addFragment(ShareGalleryFragment())
-        sharePagerAdapter.addFragment(ShareCameraFragment())
-        sharePagerAdapter.addFragment(ShareVideoFragment())
-
-        shareViewPager.adapter = sharePagerAdapter
-
-        shareTabLayout.setupWithViewPager(shareViewPager)
-
-    }
 
     override fun onBackPressed() {
 

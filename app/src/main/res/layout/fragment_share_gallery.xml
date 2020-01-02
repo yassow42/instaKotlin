@@ -67,7 +67,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar2">
+        app:layout_constraintTop_toBottomOf="@+id/view4">
 
         <FrameLayout
             android:id="@+id/imgFrameLayout"
@@ -80,27 +80,23 @@
             app:layout_constraintTop_toTopOf="parent">
 
 
-            <com.naver.android.helloyako.imagecrop.view.ImageCropView
+            <com.naver.android.helloyako.imagecrop.view.ImageCropView xmlns:imagecrop="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/imgCropView"
-                xmlns:imagecrop="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                imagecrop:gridInnerColor="#66ffffff"
+                imagecrop:gridInnerStroke="1dp"
+                imagecrop:gridOuterColor="#ffffff"
+                imagecrop:gridOuterStroke="1dp"
                 imagecrop:outsideLayerColor="#99000000"
                 imagecrop:setInnerGridMode="on"
-                imagecrop:gridInnerStroke="1dp"
-                imagecrop:gridInnerColor="#66ffffff"
-                imagecrop:setOuterGridMode="on"
-                imagecrop:gridOuterStroke="1dp"
-                imagecrop:gridOuterColor="#ffffff"
-
-                >
-
+                imagecrop:setOuterGridMode="on">
 
             </com.naver.android.helloyako.imagecrop.view.ImageCropView>
 
 
             <com.universalvideoview.UniversalVideoView
-                android:id="@+id/videoView"
+                android:id="@+id/videoViewGaleri"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
@@ -134,5 +130,12 @@
             app:layout_constraintStart_toStartOf="@+id/imgFrameLayout"
             app:layout_constraintTop_toTopOf="@+id/imgFrameLayout" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:id="@+id/view4"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/golgelik"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar2"></View>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
