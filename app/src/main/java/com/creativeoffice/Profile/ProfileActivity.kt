@@ -40,7 +40,6 @@ class ProfileActivity : AppCompatActivity() {
 
 
         setupToolbar()
-        setupNavigationView()
 
         kullaniciBilgileriniGetir()
 
@@ -101,18 +100,12 @@ class ProfileActivity : AppCompatActivity() {
         })
 
     }
-
-   
-
-
     override fun onBackPressed() {
 
         profileRoot.visibility = View.VISIBLE
 
         super.onBackPressed()
     }
-
-
     private fun setupToolbar() {
 
         imgProfileSettings.setOnClickListener {
@@ -137,8 +130,6 @@ class ProfileActivity : AppCompatActivity() {
         }
 
     }
-
-
     fun setupNavigationView() {
 
         BottomnavigationViewHelper.setupBottomNavigationView(bottomNavigationView)
@@ -150,8 +141,6 @@ class ProfileActivity : AppCompatActivity() {
         var menuItem = menu.getItem(ACTIVITY_NO)
         menuItem.setChecked(true)
     }
-
-
     private fun setupAuthListener() {
         mAuth = FirebaseAuth.getInstance()
         mAuthListener = object : FirebaseAuth.AuthStateListener {
@@ -179,6 +168,11 @@ class ProfileActivity : AppCompatActivity() {
     override fun onStart() {
         mAuth.addAuthStateListener(mAuthListener)
         super.onStart()
+    }
+
+    override fun onResume() {
+        setupNavigationView()
+        super.onResume()
     }
 
     override fun onStop() {

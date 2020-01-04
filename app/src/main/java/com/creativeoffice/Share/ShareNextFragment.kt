@@ -2,6 +2,7 @@ package com.creativeoffice.Share
 
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -9,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import com.creativeoffice.Home.HomeActivity
 import com.creativeoffice.Models.Posts
 import com.creativeoffice.Profile.YukleniyorFragment
 
@@ -39,7 +41,7 @@ import java.lang.Exception
  * A simple [Fragment] subclass.
  */
 class ShareNextFragment : Fragment() {
-    var secilenDosyaYolu: String? = null
+    var secilenDosyaYolu: String? = null //gelen dosya yolu
     var dosyaTuruResimMi: Boolean? = null
 
     lateinit var photoURI: Uri
@@ -66,8 +68,6 @@ class ShareNextFragment : Fragment() {
         photoURI = Uri.parse("file://" + secilenDosyaYolu)
 
 
-
-
         view.tvPaylasButton.setOnClickListener {
             //resim dosyası sıkıştırma
             if (dosyaTuruResimMi == true) {
@@ -84,8 +84,9 @@ class ShareNextFragment : Fragment() {
 
         }
 
-
-
+     view.imgClose.setOnClickListener {
+         activity!!.onBackPressed()
+     }
 
         return view
     }
@@ -98,32 +99,17 @@ class ShareNextFragment : Fragment() {
         mRef.child("post").child(mUser!!.uid).child(postID!!).child("yuklenme_tarihi").setValue(ServerValue.TIMESTAMP)
 
 
-    }
+        ///Burada artık paylas butonuna tıkladıktan sonra veritabanına bılgıler yazılıyordu. Yazma işlemi bittikten sonra
+        var intent = Intent(activity!!,HomeActivity::class.java)
+        startActivity(intent)
 
-
-    //////////////////////eventbuss//////////////////////////
-    @Subscribe(sticky = true)
-
-    internal fun onDosyaEvent(secilenResim: EventbusDataEvents.PaylasilacakResmiGonder) {
-        secilenDosyaYolu = secilenResim.dosyaYol
-        dosyaTuruResimMi = secilenResim.dosyaTuruResimMi
-    }
-
-    override fun onAttach(context: Context) {
-        EventBus.getDefault().register(this)
-        super.onAttach(context)
-    }
-
-    override fun onDetach() {
-        EventBus.getDefault().unregister(this)
-        super.onDetach()
     }
 
     fun uploadStoage(filePath: String?) {
 
         var fileUrl = Uri.parse("file://" + filePath)
 
-        var dialogYukleniyor = YukleniyorFragment()
+        var dialogYukleniyor = CompressandLoadingFragment()
         dialogYukleniyor.show(activity!!.supportFragmentManager, "Yuklenıyor")
         dialogYukleniyor.isCancelable = false
 
@@ -157,5 +143,25 @@ class ShareNextFragment : Fragment() {
 
 
     }
+
+    //////////////////////eventbuss//////////////////////////
+    @Subscribe(sticky = true)
+
+    internal fun onDosyaEvent(secilenResim: EventbusDataEvents.PaylasilacakResmiGonder) {
+        secilenDosyaYolu = secilenResim.dosyaYol
+        dosyaTuruResimMi = secilenResim.dosyaTuruResimMi
+    }
+
+    override fun onAttach(context: Context) {
+        EventBus.getDefault().register(this)
+        super.onAttach(context)
+    }
+
+    override fun onDetach() {
+        EventBus.getDefault().unregister(this)
+        super.onDetach()
+    }
+
+
 
 }

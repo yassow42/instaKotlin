@@ -16,12 +16,12 @@ class SearchActivity : AppCompatActivity() {
         setContentView(R.layout.activity_home)
 
 
-        setupNavigationView()
+        //setupNavigationView()
 
 
     }
 
-
+/*
     fun setupNavigationView() {
 
         BottomnavigationViewHelper.setupBottomNavigationView(bottomNavigationView)
@@ -30,5 +30,5 @@ class SearchActivity : AppCompatActivity() {
         var menuItem = menu.getItem(ACTIVITY_NO)
         menuItem.setChecked(true)
     }
-
+*/
 }

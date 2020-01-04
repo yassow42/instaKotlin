@@ -149,7 +149,7 @@ class DosyaIslemleri {
         //yeni dosya returnu alttakı resulta donuyor cunku "2" de yazdıgı gıbı sıkıstırma bıttıgnde burası calısıyor.
         override fun onPostExecute(sıkısmısResimDosyaYolu: String?) {
             compressFragment.dismiss()
-            Log.e("Hata", "yenı dosyanın adı." + sıkısmısResimDosyaYolu)
+        //    Log.e("Hata", "yenı dosyanın adı." + sıkısmısResimDosyaYolu)
             (myFragment as ShareNextFragment).uploadStoage(sıkısmısResimDosyaYolu)
             super.onPostExecute(sıkısmısResimDosyaYolu)
         }

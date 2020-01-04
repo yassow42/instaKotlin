@@ -10,7 +10,7 @@ import android.view.ViewGroup
 
 import com.creativeoffice.instakotlin.R
 import com.otaliastudios.cameraview.CameraView
-import com.otaliastudios.cameraview.controls.Mode
+//import com.otaliastudios.cameraview.controls.Mode
 import kotlinx.android.synthetic.main.fragment_share_video.*
 import kotlinx.android.synthetic.main.fragment_share_video.view.*
 
@@ -29,8 +29,8 @@ class ShareVideoFragment : Fragment() {
         var view =  inflater.inflate(R.layout.fragment_share_video, container, false)
 
         videoView1 = view.videoViewFoto
-        videoView1.mode = Mode.VIDEO
-        videoView1.setLifecycleOwner(viewLifecycleOwner)
+      //  videoView1.mode = Mode.VIDEO
+    //    videoView1.setLifecycleOwner(viewLifecycleOwner)
         return view
     }
 
@@ -38,7 +38,7 @@ class ShareVideoFragment : Fragment() {
 
         super.onResume()
         Log.e("kamera","video Kamera calıstı")
-        videoView1.open()
+        videoView1.start()
 
     }
 
@@ -46,7 +46,7 @@ class ShareVideoFragment : Fragment() {
         super.onPause()
         Log.e("kamera"," video Kamera durdu")
 
-        videoView1.close()
+       // videoView1.close()
     }
 
     override fun onDestroy() {

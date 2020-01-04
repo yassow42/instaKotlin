@@ -16,12 +16,12 @@ class NewsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_news)
 
 
-       setupNavigationView()
+    //   setupNavigationView()
 
 
     }
 
-
+/*
     fun setupNavigationView() {
 
         BottomnavigationViewHelper.setupBottomNavigationView(bottomNavigationView)
@@ -30,5 +30,5 @@ class NewsActivity : AppCompatActivity() {
         var menuItem = menu.getItem(ACTIVITY_NO)
         menuItem.setChecked(true)
     }
-
+*/
 }

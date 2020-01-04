@@ -52,7 +52,7 @@ class ShareActivity : AppCompatActivity() {
         var tabAdlari = ArrayList<String>()
         tabAdlari.add("Galeri")
         tabAdlari.add("FOTOĞRAF")
-       // tabAdlari.add("VİDEO")
+      //  tabAdlari.add("VİDEO")
 
 
         var sharePagerAdapter = SharePagerAdapter(supportFragmentManager, tabAdlari)

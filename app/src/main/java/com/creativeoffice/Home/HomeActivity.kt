@@ -16,7 +16,7 @@ class HomeActivity : AppCompatActivity() {
     lateinit var mAuth: FirebaseAuth
     lateinit var mAuthListener: FirebaseAuth.AuthStateListener
 
-    private val ACTIVITY_NO = 0
+
     private val TAG = "HomeActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,24 +27,12 @@ class HomeActivity : AppCompatActivity() {
         mAuth = FirebaseAuth.getInstance()
 
         setupAuthListener()
-        setupNavigationView()
         setupHomeViewPager()
         initImageLoader()
 
     }
 
 
-    fun setupNavigationView() {
-
-        BottomnavigationViewHelper.setupBottomNavigationView(bottomNavigationView)
-        BottomnavigationViewHelper.setupNavigation(
-            this,
-            bottomNavigationView
-        ) // Bottomnavhelper içinde setupNavigationda context ve nav istiyordu verdik...
-        var menu = bottomNavigationView.menu
-        var menuItem = menu.getItem(ACTIVITY_NO)
-        menuItem.setChecked(true)
-    }
 
 
     private fun setupHomeViewPager() {
@@ -94,6 +82,12 @@ class HomeActivity : AppCompatActivity() {
     override fun onStart() {
         mAuth.addAuthStateListener(mAuthListener)
         super.onStart()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        homeViewPager.setCurrentItem(1)
+
     }
 
     override fun onStop() {

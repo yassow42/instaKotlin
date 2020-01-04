@@ -56,7 +56,7 @@ dependencies {
     // silicompuressor foto kalıte dusurme
     implementation 'com.iceteck.silicompressorr:silicompressor:2.2.2'
 //cameraWiew 1,5,1
-    implementation 'com.otaliastudios:cameraview:2.6.0'
+    implementation 'com.otaliastudios:cameraview:1.5.1'
 
 
 }
