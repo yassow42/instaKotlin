@@ -110,15 +110,12 @@ class ShareGalleryFragment : Fragment() {
 
     fun setupRecyclerView(secilenKlasordekiDosyalar: ArrayList<String>) {
 
-
-
-        var recyclerViewAdapter = ShareGalleryRecyclerAdapter(activity!!,secilenKlasordekiDosyalar)
+        var recyclerViewAdapter = ShareGalleryRecyclerAdapter(activity!!, secilenKlasordekiDosyalar)
         recyclerViewDosyalar.adapter = recyclerViewAdapter
         //grid view seklinde gösterim yaptık.
-        var layoutManagerr= GridLayoutManager(activity!!,4)
-        recyclerViewDosyalar.layoutManager=layoutManagerr
+        var layoutManagerr = GridLayoutManager(activity!!, 3)
+        recyclerViewDosyalar.layoutManager = layoutManagerr
         recyclerViewDosyalar.setHasFixedSize(true)
-
 
 
         if (secilenKlasordekiDosyalar.size > 0) {
@@ -130,7 +127,6 @@ class ShareGalleryFragment : Fragment() {
             imgCropView.visibility = View.INVISIBLE
 
         }
-
 
 
     }
@@ -145,7 +141,7 @@ class ShareGalleryFragment : Fragment() {
                 videoViewGaleri.visibility = View.VISIBLE
                 imgCropView.visibility = View.INVISIBLE
                 videoViewGaleri.setVideoURI(Uri.parse("file://" + dosyaYolu))
-                 videoViewGaleri.start()
+                videoViewGaleri.start()
                 pbImgBuyukResim.visibility = View.GONE
 
                 dosyaTuruResimMi = false
@@ -170,7 +166,7 @@ class ShareGalleryFragment : Fragment() {
         secilenDosyaYolu = secilenDosya.dosyaYolu
 
         resimVeyaVideoGoster(secilenDosyaYolu!!)
-       // Log.e("gelenResimyolu", gelenResimYolu)
+        // Log.e("gelenResimyolu", gelenResimYolu)
     }
 
     override fun onAttach(context: Context) {

@@ -1,5 +1,6 @@
 package com.creativeoffice.utils
 
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
@@ -24,6 +25,18 @@ class HomePagerAdapter(fm:FragmentManager) : FragmentPagerAdapter(fm) { //fm uyg
     fun addFragment (fragment: Fragment){
 
         mFragmentList.add(fragment)
+    }
+
+
+    fun secilenFragmentiViewPagerdanSil(viewGroup: ViewGroup, position: Int) {
+
+        var silinecekFragment = this.instantiateItem(viewGroup, position)
+        this.destroyItem(viewGroup, position, silinecekFragment)
+    }
+
+    fun secilenFragmentıViewPageraEkle(viewGroup: ViewGroup, position: Int) {
+
+        this.instantiateItem(viewGroup, position)
     }
 
 }

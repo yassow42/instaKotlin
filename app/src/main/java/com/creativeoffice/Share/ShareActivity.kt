@@ -52,53 +52,53 @@ class ShareActivity : AppCompatActivity() {
         var tabAdlari = ArrayList<String>()
         tabAdlari.add("Galeri")
         tabAdlari.add("FOTOĞRAF")
-      //  tabAdlari.add("VİDEO")
+        //  tabAdlari.add("VİDEO")
 
 
         var sharePagerAdapter = SharePagerAdapter(supportFragmentManager, tabAdlari)
         sharePagerAdapter.addFragment(ShareGalleryFragment())
         sharePagerAdapter.addFragment(ShareCameraFragment())
-       // sharePagerAdapter.addFragment(ShareVideoFragment())
+        // sharePagerAdapter.addFragment(ShareVideoFragment())
 
         shareViewPager.adapter = sharePagerAdapter
         shareViewPager.offscreenPageLimit = 1   //burada pagerler arası gecıslerde hepsi calısıyordu bunu arka ve onden 1 adet calıstır dıye sınırladık daha sonra addOnPagelıstener ıle de arkasında
         // kı ve ondekı fragmentı kapatacagız kı cameralar aynı anda calısamasın....
 
-     /*   shareViewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
-            override fun onPageScrollStateChanged(state: Int) {
+        /*   shareViewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+               override fun onPageScrollStateChanged(state: Int) {
 
-            }
+               }
 
-            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+               override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
 
-            }
+               }
 
-            override fun onPageSelected(position: Int) {
+               override fun onPageSelected(position: Int) {
 
-                if (position == 0) {
+                   if (position == 0) {
 
-                    sharePagerAdapter.secilenFragmentiViewPagerdanSil(shareViewPager,1)
-                    sharePagerAdapter.secilenFragmentiViewPagerdanSil(shareViewPager,2)
-                    sharePagerAdapter.secilenFragmentıViewPageraEkle(shareViewPager,0)
+                       sharePagerAdapter.secilenFragmentiViewPagerdanSil(shareViewPager,1)
+                       sharePagerAdapter.secilenFragmentiViewPagerdanSil(shareViewPager,2)
+                       sharePagerAdapter.secilenFragmentıViewPageraEkle(shareViewPager,0)
 
-                }
-                if (position == 1) {
+                   }
+                   if (position == 1) {
 
-                    sharePagerAdapter.secilenFragmentiViewPagerdanSil(shareViewPager,0)
-                    sharePagerAdapter.secilenFragmentiViewPagerdanSil(shareViewPager,2)
-                    sharePagerAdapter.secilenFragmentıViewPageraEkle(shareViewPager,1)
-                }
-                if (position == 2) {
+                       sharePagerAdapter.secilenFragmentiViewPagerdanSil(shareViewPager,0)
+                       sharePagerAdapter.secilenFragmentiViewPagerdanSil(shareViewPager,2)
+                       sharePagerAdapter.secilenFragmentıViewPageraEkle(shareViewPager,1)
+                   }
+                   if (position == 2) {
 
-                    sharePagerAdapter.secilenFragmentiViewPagerdanSil(shareViewPager,0)
-                    sharePagerAdapter.secilenFragmentiViewPagerdanSil(shareViewPager,1)
-                    sharePagerAdapter.secilenFragmentıViewPageraEkle(shareViewPager,2)
-                }
+                       sharePagerAdapter.secilenFragmentiViewPagerdanSil(shareViewPager,0)
+                       sharePagerAdapter.secilenFragmentiViewPagerdanSil(shareViewPager,1)
+                       sharePagerAdapter.secilenFragmentıViewPageraEkle(shareViewPager,2)
+                   }
 
-            }
+               }
 
 
-        })*/
+           })*/
         shareTabLayout.setupWithViewPager(shareViewPager)
 
     }
@@ -122,14 +122,14 @@ class ShareActivity : AppCompatActivity() {
                     if (report!!.isAnyPermissionPermanentlyDenied) {
                         Log.e("Hata", " İzinleri engellenmiş pic")
 
-                        ///////////////////////////////alet dialogla izni tekrar istiyoru /////////////////////////////
+                        ///////////////////////////////alet dialogla izni tekrar istiyoru ///////////////////////////
                         var builder = AlertDialog.Builder(this@ShareActivity)
                         builder.setTitle("İzin Gerekli")
                         builder.setMessage("Ayarlar kısmından uygulamaya izin vermeniz gerekiyor.")
                         builder.setPositiveButton("Ayarlara git", object : DialogInterface.OnClickListener {
                             override fun onClick(dialog: DialogInterface?, which: Int) {
                                 dialog!!.cancel()
-                                var intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                                var intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS) //appın ayarlarına gıttık
                                 var uri = Uri.fromParts("package", packageName, null)
                                 intent.setData(uri)
                                 startActivity(intent)
@@ -145,7 +145,7 @@ class ShareActivity : AppCompatActivity() {
 
                         })
                         builder.show()
-                        ///////////////////////////////alet dialogla izni tekrar istiyoru /////////////////////////////
+                        ///////////////////////////////alet dialogla izni tekrar istiyoruz /////////////////////////////
                     }
 
                 }

@@ -6,9 +6,9 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import javax.xml.parsers.FactoryConfigurationError
 
-class SharePagerAdapter(fm: FragmentManager,tabAdlari:ArrayList<String>) : FragmentPagerAdapter(fm) {
+class SharePagerAdapter(fm: FragmentManager, tabAdlari: ArrayList<String>) : FragmentPagerAdapter(fm) {
     private var mFragmentLıst: ArrayList<Fragment> = ArrayList()
-    private var mTabAdlari:ArrayList<String> = tabAdlari
+    private var mTabAdlari: ArrayList<String> = tabAdlari
 
     override fun getItem(position: Int): Fragment {
 
@@ -29,14 +29,14 @@ class SharePagerAdapter(fm: FragmentManager,tabAdlari:ArrayList<String>) : Fragm
     }
 
 
-    fun secilenFragmentiViewPagerdanSil(viewGroup: ViewGroup, position: Int){
+    fun secilenFragmentiViewPagerdanSil(viewGroup: ViewGroup, position: Int) {
 
-        var silinecekFragment = this.instantiateItem(viewGroup,position)
-        this.destroyItem(viewGroup,position,silinecekFragment)
+        var silinecekFragment = this.instantiateItem(viewGroup, position)
+        this.destroyItem(viewGroup, position, silinecekFragment)
     }
 
-    fun secilenFragmentıViewPageraEkle(viewGroup: ViewGroup,position: Int){
+    fun secilenFragmentıViewPageraEkle(viewGroup: ViewGroup, position: Int) {
 
-
+        this.instantiateItem(viewGroup, position)
     }
 }

@@ -14,8 +14,10 @@ class EventbusDataEvents {
 
     internal class KullaniciBilgileriniGonder(var kullanici: Users?)
 
-    internal class PaylasilacakResmiGonder(var dosyaYol:String?,var dosyaTuruResimMi:Boolean?)
+    internal class PaylasilacakResmiGonder(var dosyaYol: String?, var dosyaTuruResimMi: Boolean?)
 
-    internal class GaleriDosyaYolunuGonder(var dosyaYolu:String?)
+    internal class GaleriDosyaYolunuGonder(var dosyaYolu: String?)
+
+    internal class KameraIzinBilgisiGonder(var IzinVerildiMi: Boolean?)
 
 }

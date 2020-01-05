@@ -1,5 +1,6 @@
 package com.creativeoffice.Home
 
+import android.content.Context
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
@@ -11,17 +12,18 @@ import com.creativeoffice.Share.ShareNextFragment
 import com.creativeoffice.instakotlin.R
 import com.creativeoffice.utils.DosyaIslemleri
 import com.creativeoffice.utils.EventbusDataEvents
-import com.otaliastudios.cameraview.CameraListener
-import com.otaliastudios.cameraview.CameraView
-import com.otaliastudios.cameraview.Gesture
-import com.otaliastudios.cameraview.GestureAction
+import com.otaliastudios.cameraview.*
 import kotlinx.android.synthetic.main.fragment_camera.view.*
+import kotlinx.android.synthetic.main.fragment_camera.view.imgFotoCek
+import kotlinx.android.synthetic.main.fragment_share_camera.view.*
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 import java.io.File
 import java.io.FileOutputStream
 
 class CameraFragment : Fragment() {
     lateinit var cameraView: CameraView
+    var izinBilgisi: Boolean? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,16 +37,6 @@ class CameraFragment : Fragment() {
         cameraView.mapGesture(Gesture.TAP, GestureAction.FOCUS) //focusozeligi actık
         // cameraView.setLifecycleOwner(viewLifecycleOwner)
 
-
-        view.imgFotoCek.setOnClickListener {
-            cameraView.capturePicture()
-            Log.e("kameraHome", "foto cekildi")
-        }
-
-
-        view.constraintLayoutRoot.visibility= View.VISIBLE
-        view.frameLayoutContainerHomeCamera.visibility=View.GONE
-
         cameraView.addCameraListener(object : CameraListener() {
             override fun onPictureTaken(jpeg: ByteArray?) {
                 super.onPictureTaken(jpeg)
@@ -55,30 +47,53 @@ class CameraFragment : Fragment() {
                 dosyaOlustur.write(jpeg)
                 dosyaOlustur.close()
 
-                view.constraintLayoutRoot.visibility= View.GONE
-                view.frameLayoutContainerHomeCamera.visibility=View.VISIBLE
 
-                var transaction= activity!!.supportFragmentManager.beginTransaction()
-                /////////////////
-                EventBus.getDefault().postSticky(EventbusDataEvents.PaylasilacakResmiGonder(cekilenFotoYolu.absolutePath.toString(),true))
-                /////////////////
-                transaction.addToBackStack("camera")
-                transaction.replace(R.id.frameLayoutContainerHomeCamera,ShareNextFragment())
-                transaction.commit()
+                Log.e("kameraHome","cekilen resim Kaydedildi $cekilenFotoYolu ")
+
 
             }
         })
+
+
+        view.imgFotoCek.setOnClickListener {
+
+            if (cameraView!!.facing == Facing.BACK) {
+                cameraView.capturePicture()
+            } else {
+                cameraView.captureSnapshot()
+            }
+
+           // Log.e("kameraHome", "foto cekildi")
+        }
+
+        view.imgCameraSwitch.setOnClickListener {
+            if (cameraView!!.facing == Facing.BACK) {
+                cameraView!!.facing = Facing.FRONT
+            } else if (cameraView!!.facing == Facing.FRONT) {
+                cameraView!!.facing = Facing.BACK
+            }
+        }
+
+
+
+
 
         return view
     }
 
 
-
     override fun onResume() {
 
         super.onResume()
-        Log.e("kameraHome", "foto Kamera calıstı")
-        cameraView.start()
+
+        if (izinBilgisi == true) {
+            Log.e("kameraHome", "foto Kamera calıstı")
+            cameraView.start()
+        }else if (izinBilgisi==false)  {
+            Log.e("kameraHome", "foto Kamera izni verilmemiş")
+
+        }
+
 
     }
 
@@ -91,11 +106,29 @@ class CameraFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.e("kameraHome", "foto Kamera öldü")
-        if (cameraView != null) {
+        Log.e("kameraHome", "foto Kamera Destroy")
+      //  if (cameraView != null) {
             cameraView.destroy()
-        }
+      //  }
 
     }
+
+    //////////////////////eventbuss//////////////////////////
+    @Subscribe(sticky = true)
+
+    internal fun onDosyaEvent(izinVerildigiSorgusu: EventbusDataEvents.KameraIzinBilgisiGonder) {
+        izinBilgisi = izinVerildigiSorgusu.IzinVerildiMi!!
+    }
+
+    override fun onAttach(context: Context) {
+        EventBus.getDefault().register(this)
+        super.onAttach(context)
+    }
+
+    override fun onDetach() {
+        EventBus.getDefault().unregister(this)
+        super.onDetach()
+    }
+
 
 }
