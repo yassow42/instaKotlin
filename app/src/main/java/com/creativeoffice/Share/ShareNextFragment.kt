@@ -18,6 +18,7 @@ import com.creativeoffice.instakotlin.R
 import com.creativeoffice.utils.DosyaIslemleri
 import com.creativeoffice.utils.EventbusDataEvents
 import com.creativeoffice.utils.UniversalImageLoader
+import com.google.android.gms.tasks.Continuation
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.Task
@@ -59,12 +60,14 @@ class ShareNextFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_share_next, container, false)
 
+        UniversalImageLoader.setImage("file://" + secilenDosyaYolu!!, view!!.imgNextFragment, view.progressBar2)
+
         mAuth = FirebaseAuth.getInstance()
         mUser = mAuth.currentUser!!
         mRef = FirebaseDatabase.getInstance().reference
         mStorageReference = FirebaseStorage.getInstance().reference
 
-        UniversalImageLoader.setImage("file://" + secilenDosyaYolu!!, view!!.imageView3, view.progressBar2)
+
         photoURI = Uri.parse("file://" + secilenDosyaYolu)
 
 
@@ -84,62 +87,69 @@ class ShareNextFragment : Fragment() {
 
         }
 
-     view.imgClose.setOnClickListener {
-         activity!!.onBackPressed()
-     }
+        view.imgClose.setOnClickListener {
+            activity!!.onBackPressed()
+        }
 
         return view
     }
 
     private fun veritabaninaBilgileriYaz(yuklenenPhotoURl: String?) {
-        var postID = mRef.child("post").child(mUser!!.uid).push().key
-        var yuklenenPost = Posts(mUser!!.uid, postID, "", etPostAciklama.text.toString(), yuklenenPhotoURl)
+        var postID = mRef.child("post").child(mUser.uid).push().key
 
-        mRef.child("post").child(mUser!!.uid).child(postID!!).setValue(yuklenenPost)
-        mRef.child("post").child(mUser!!.uid).child(postID!!).child("yuklenme_tarihi").setValue(ServerValue.TIMESTAMP)
+        var yuklenenPost = Posts(mUser.uid, postID, 0, etPostAciklama.text.toString(), yuklenenPhotoURl)
+
+        mRef.child("post").child(mUser.uid).child(postID!!).setValue(yuklenenPost)
+        mRef.child("post").child(mUser.uid).child(postID).child("yuklenme_tarihi").setValue(ServerValue.TIMESTAMP)
 
 
         ///Burada artık paylas butonuna tıkladıktan sonra veritabanına bılgıler yazılıyordu. Yazma işlemi bittikten sonra
-        var intent = Intent(activity!!,HomeActivity::class.java)
+        var intent = Intent(activity!!, HomeActivity::class.java)
         startActivity(intent)
 
     }
 
-    fun uploadStoage(filePath: String?) {
+    fun uploadStorage(filePath: String?) {
 
-        var fileUrl = Uri.parse("file://" + filePath)
+        var fileUri = Uri.parse("file://" + filePath)
 
         var dialogYukleniyor = CompressandLoadingFragment()
         dialogYukleniyor.show(activity!!.supportFragmentManager, "Yuklenıyor")
         dialogYukleniyor.isCancelable = false
 
-        mStorageReference.child("users").child(mUser!!.uid).child(fileUrl.lastPathSegment!!).putFile(fileUrl)
-            .addOnCompleteListener(object : OnCompleteListener<UploadTask.TaskSnapshot> {
-                override fun onComplete(p0: Task<UploadTask.TaskSnapshot>) {
+        val ref = mStorageReference.child("users").child(mUser.uid).child(fileUri.toString())
+        var uploadTask = ref.putFile(fileUri)
 
-                    if (p0.isSuccessful) {
-                        dialogYukleniyor.dismiss()
-
-                        veritabaninaBilgileriYaz(p0.result!!.uploadSessionUri.toString()) //Yuklenen fotografın url sını aldık.
-                    }
-
+        val urlTask = uploadTask.continueWithTask(Continuation<UploadTask.TaskSnapshot, Task<Uri>> { task ->
+            if (!task.isSuccessful) {
+                task.exception?.let {
+                    throw it
                 }
+            }
+            return@Continuation ref.downloadUrl
+        }).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val downloadUri = task.result
 
-            }).addOnFailureListener(object : OnFailureListener {
-                override fun onFailure(p0: Exception) {
-                    dialogYukleniyor.dismiss()
-                    Toast.makeText(activity, "Hata Oluştu" + p0!!.message, Toast.LENGTH_SHORT).show()
-                }
-            })
-            .addOnProgressListener(object : OnProgressListener<UploadTask.TaskSnapshot> {
-                override fun onProgress(p0: UploadTask.TaskSnapshot) {
+                dialogYukleniyor.dismiss()
+                veritabaninaBilgileriYaz(downloadUri.toString())
+            } else {
+                dialogYukleniyor.dismiss()
+                Toast.makeText(activity, "Hata oluştu", Toast.LENGTH_SHORT).show()
+            }
+        }
 
-                    var progress = 100 * p0.bytesTransferred / p0.totalByteCount
-                    dialogYukleniyor.tvBilgi.text = "% " + progress.toInt().toString()+" yüklendi..."
+        uploadTask.addOnProgressListener(object : OnProgressListener<UploadTask.TaskSnapshot> {
 
-                }
+            override fun onProgress(p0: UploadTask.TaskSnapshot) {
+                var progress = 100.0 * p0!!.bytesTransferred / p0!!.totalByteCount
+                //Log.e("HATA", "ILERLEME : " + progress)
+                dialogYukleniyor.tvBilgi.text = "%" + progress.toInt().toString() + " yüklendi.."
 
-            })
+            }
+
+
+        })
 
 
     }
@@ -161,7 +171,6 @@ class ShareNextFragment : Fragment() {
         EventBus.getDefault().unregister(this)
         super.onDetach()
     }
-
 
 
 }

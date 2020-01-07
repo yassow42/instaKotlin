@@ -79,6 +79,7 @@ class ShareGalleryFragment : Fragment() {
             }
 
         }
+
         activity!!.anaLayout.visibility = View.VISIBLE
         activity!!.fragmentContainerLayout.visibility = View.GONE
 

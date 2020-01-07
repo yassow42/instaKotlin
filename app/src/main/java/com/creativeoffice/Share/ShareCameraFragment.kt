@@ -77,7 +77,7 @@ class ShareCameraFragment : Fragment() {
 
         super.onResume()
         Log.e("kamera", "foto Kamera calıstı")
-        cameraView.start()
+        //cameraView.start()
 
     }
 

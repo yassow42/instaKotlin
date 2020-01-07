@@ -3,7 +3,6 @@ package com.creativeoffice.utils
 import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.net.Uri
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup

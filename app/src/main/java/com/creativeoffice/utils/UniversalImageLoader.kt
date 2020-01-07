@@ -19,8 +19,9 @@ class UniversalImageLoader(val mContext: Context) {
 
     val config: ImageLoaderConfiguration
         get() {
+
             val defaultOptions = DisplayImageOptions.Builder()
-                .showImageOnLoading(defaultImage)
+                //.showImageOnLoading(defaultImage)
                 .showImageForEmptyUri(defaultImage)
                 .showImageOnFail(defaultImage)
                 .cacheOnDisk(true).cacheInMemory(true)
@@ -34,20 +35,15 @@ class UniversalImageLoader(val mContext: Context) {
                 .defaultDisplayImageOptions(defaultOptions)
                 .memoryCache(WeakMemoryCache())
                 .diskCacheSize(100 * 1024 * 1024).build()
+
         }
 
 
     companion object { //companion statik obje olusturmak için private ise sadece burada kulllanılsın demek.
-        private val defaultImage = R.drawable.ic_profile
+        private val defaultImage = R.drawable.ic_home
 
         //Gonderdigimiz imageyı nasıl cagıracagız. Ustte ayarları yaptık
-        fun setImage(
-            imgURL: String,
-            imageView: ImageView,
-            mProgresBar: ProgressBar
-
-        ) {
-
+        fun setImage(imgURL: String, imageView: ImageView, mProgresBar: ProgressBar?) {
 
             //İmgURL: facebook.com/images/logo.jpeg
             //ilkKısım: http:// olur

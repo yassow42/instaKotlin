@@ -88,7 +88,7 @@ class CameraFragment : Fragment() {
 
         if (izinBilgisi == true) {
             Log.e("kameraHome", "foto Kamera calıstı")
-            cameraView.start()
+          //  cameraView.start()
         }else if (izinBilgisi==false)  {
             Log.e("kameraHome", "foto Kamera izni verilmemiş")
 

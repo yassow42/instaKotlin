@@ -107,7 +107,7 @@ class ProfileEditFragment : Fragment() {
     // null ise degsıtırmek ıstemedı
     private fun kullaniciAdiniGuncelle(view: View, profilResmiDegisti: Boolean?) {
 
-        if (!gelenKullaniciBilgileri!!.user_name!!.equals(view.etUserName.text.toString())) {
+        if (!gelenKullaniciBilgileri.user_name!!.equals(view.etUserName.text.toString())) {
             mDatabaseRef.child("users").orderByChild("user_name").addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onCancelled(p0: DatabaseError) {
 

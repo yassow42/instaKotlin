@@ -29,7 +29,7 @@ class ShareActivityGridViewAdapter(context: Context, resource: Int, var klasorde
 
         var imgView = tek_sutun_resim!!.imgTekSutunImage
         var progressBar = tek_sutun_resim.pbTekSutunImage
-        var tvSure = tek_sutun_resim!!.tvSure
+        var tvSure = tek_sutun_resim.tvSure
         var imgURL = klasordekiDosyalar.get(position)
 
 

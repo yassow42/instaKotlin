@@ -141,6 +141,8 @@ class ProfileActivity : AppCompatActivity() {
         var menuItem = menu.getItem(ACTIVITY_NO)
         menuItem.setChecked(true)
     }
+
+
     private fun setupAuthListener() {
         mAuth = FirebaseAuth.getInstance()
         mAuthListener = object : FirebaseAuth.AuthStateListener {

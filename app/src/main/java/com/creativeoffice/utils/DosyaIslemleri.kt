@@ -115,7 +115,7 @@ class DosyaIslemleri {
 
         override fun onPostExecute(yeniOlusturulanVideoDosyası: String?) {
             if (!yeniOlusturulanVideoDosyası.isNullOrEmpty()){
-                (myFragment as ShareNextFragment).uploadStoage(yeniOlusturulanVideoDosyası)
+                (myFragment as ShareNextFragment).uploadStorage(yeniOlusturulanVideoDosyası)
             }
             compressFragment.dismiss()
             super.onPostExecute(yeniOlusturulanVideoDosyası)
@@ -150,7 +150,7 @@ class DosyaIslemleri {
         override fun onPostExecute(sıkısmısResimDosyaYolu: String?) {
             compressFragment.dismiss()
         //    Log.e("Hata", "yenı dosyanın adı." + sıkısmısResimDosyaYolu)
-            (myFragment as ShareNextFragment).uploadStoage(sıkısmısResimDosyaYolu)
+            (myFragment as ShareNextFragment).uploadStorage(sıkısmısResimDosyaYolu)
             super.onPostExecute(sıkısmısResimDosyaYolu)
         }
     }
