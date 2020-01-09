@@ -37,6 +37,7 @@ import kotlinx.android.synthetic.main.fragment_yukleniyor.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import java.lang.Exception
+import java.sql.Time
 
 /**
  * A simple [Fragment] subclass.
@@ -102,6 +103,15 @@ class ShareNextFragment : Fragment() {
         mRef.child("post").child(mUser.uid).child(postID!!).setValue(yuklenenPost)
         mRef.child("post").child(mUser.uid).child(postID).child("yuklenme_tarihi").setValue(ServerValue.TIMESTAMP)
 
+        //gönderi açıklamasını yorum dugumunu eklıyoruz.
+        if (!etPostAciklama.text.toString().isNullOrEmpty()) {
+
+            mRef.child("comments").child(postID).child(postID).child("user_id").setValue(mUser.uid)
+            mRef.child("comments").child(postID).child(postID).child("yorum_tarih").setValue(ServerValue.TIMESTAMP)
+            mRef.child("comments").child(postID).child(postID).child("yorum").setValue(etPostAciklama.text.toString())
+            mRef.child("comments").child(postID).child(postID).child("yorum_begeni").setValue("0")
+
+        }
 
         ///Burada artık paylas butonuna tıkladıktan sonra veritabanına bılgıler yazılıyordu. Yazma işlemi bittikten sonra
         var intent = Intent(activity!!, HomeActivity::class.java)

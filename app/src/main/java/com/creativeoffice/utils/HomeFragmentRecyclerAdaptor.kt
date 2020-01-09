@@ -6,9 +6,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.creativeoffice.Generic.CommentFragment
+import com.creativeoffice.Home.HomeActivity
 import com.creativeoffice.Models.UserPost
 import com.creativeoffice.instakotlin.R
+import kotlinx.android.synthetic.main.activity_home.*
 import kotlinx.android.synthetic.main.tek_post_recycler_item.view.*
+import org.greenrobot.eventbus.EventBus
 import java.util.*
 import kotlin.Comparator
 import kotlin.collections.ArrayList
@@ -24,7 +28,8 @@ class HomeFragmentRecyclerAdaptor(var myContext: Context, var tumGonderiler: Arr
                 } else {
                     return 1
                 }
-            }})
+            }
+        })
 
     }
 
@@ -34,17 +39,17 @@ class HomeFragmentRecyclerAdaptor(var myContext: Context, var tumGonderiler: Arr
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         var viewHolder = LayoutInflater.from(myContext).inflate(R.layout.tek_post_recycler_item, parent, false)
-        return MyViewHolder(viewHolder)
+        return MyViewHolder(viewHolder, myContext)
     }
 
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.setData(position, tumGonderiler.get(position))
+        holder.setData(position, tumGonderiler.get(position), myContext)
 
 
     }
 
-    class MyViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView!!) {
+    class MyViewHolder(itemView: View?, myContext: Context) : RecyclerView.ViewHolder(itemView!!) {
 
 
         var tumLayout = itemView as ConstraintLayout
@@ -59,7 +64,9 @@ class HomeFragmentRecyclerAdaptor(var myContext: Context, var tumGonderiler: Arr
         var progresProfilFoto = tumLayout.pbUserProfile
         var progresPostFoto = tumLayout.pbPostFoto
 
-        fun setData(position: Int, oankiGonderi: UserPost) {
+        var yorumYap = tumLayout.imgYorum
+
+        fun setData(position: Int, oankiGonderi: UserPost, myContext: Context) {
 
             userNameTitle.text = oankiGonderi.userName
             userName.text = oankiGonderi.userName
@@ -74,6 +81,23 @@ class HomeFragmentRecyclerAdaptor(var myContext: Context, var tumGonderiler: Arr
                 oankiGonderi.postUrl!!, postImage, progresPostFoto
             )
 
+
+
+            yorumYap.setOnClickListener {
+
+                EventBus.getDefault().postSticky(EventbusDataEvents.YorumYapilacakGonderiIDYolla(oankiGonderi.postID))
+
+                myContext as HomeActivity
+                myContext.homeRoot.visibility = View.GONE
+                myContext.homeContainer.visibility = View.VISIBLE
+                //geriye gelince kapal? kal?yordu homeactivity de tekrar actik.
+
+                var transaction = myContext.supportFragmentManager.beginTransaction()
+                transaction.addToBackStack("comment eklendi")
+                transaction.replace(R.id.homeContainer, CommentFragment())
+                transaction.commit()
+
+            }
 
         }
 

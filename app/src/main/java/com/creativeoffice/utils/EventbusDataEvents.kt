@@ -20,4 +20,6 @@ class EventbusDataEvents {
 
     internal class KameraIzinBilgisiGonder(var IzinVerildiMi: Boolean?)
 
+    internal class YorumYapilacakGonderiIDYolla(var gonderiID: String?)
+
 }

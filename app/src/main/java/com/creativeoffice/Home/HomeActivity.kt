@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
 import androidx.viewpager.widget.ViewPager
@@ -63,8 +64,6 @@ class HomeActivity : AppCompatActivity() {
         homeViewPager.setCurrentItem(1)  // Bu pagerda id = 1 olanı ılk olarak aç
 
 
-
-
         homeViewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {
 
@@ -118,33 +117,34 @@ class HomeActivity : AppCompatActivity() {
         Dexter.withActivity(this).withPermissions(
             android.Manifest.permission.CAMERA,
             android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            android.Manifest.permission.READ_EXTERNAL_STORAGE)
+            android.Manifest.permission.READ_EXTERNAL_STORAGE
+        )
             .withListener(object :
-            MultiplePermissionsListener {
-            override fun onPermissionsChecked(report: MultiplePermissionsReport?) {
-                EventBus.getDefault().postSticky(EventbusDataEvents.KameraIzinBilgisiGonder(true))
+                MultiplePermissionsListener {
+                override fun onPermissionsChecked(report: MultiplePermissionsReport?) {
+                    EventBus.getDefault().postSticky(EventbusDataEvents.KameraIzinBilgisiGonder(true))
 
 
-                if (report!!.areAllPermissionsGranted()){
-                    homeViewPager.setCurrentItem(0)
-                }
+                    if (report!!.areAllPermissionsGranted()) {
+                        homeViewPager.setCurrentItem(0)
+                    }
 
-                if (report!!.isAnyPermissionPermanentlyDenied){
+                    if (report!!.isAnyPermissionPermanentlyDenied) {
 
                         homeViewPager.setCurrentItem(1)  // kullanıcı izin vermezse kameraya giremez.
 
 
+                    }
+
                 }
 
-            }
+                override fun onPermissionRationaleShouldBeShown(permissions: MutableList<PermissionRequest>?, token: PermissionToken?) {
+                    token!!.continuePermissionRequest()
 
-            override fun onPermissionRationaleShouldBeShown(permissions: MutableList<PermissionRequest>?, token: PermissionToken?) {
-                token!!.continuePermissionRequest()
-
-            }
+                }
 
 
-        }).check()
+            }).check()
     }
 
 
@@ -152,6 +152,23 @@ class HomeActivity : AppCompatActivity() {
 
         var universalImageLoader = UniversalImageLoader(this)
         ImageLoader.getInstance().init(universalImageLoader.config)
+    }
+
+
+    override fun onBackPressed() {
+
+        if (homeViewPager.currentItem == 1) {
+            homeRoot.visibility = View.VISIBLE
+            homeContainer.visibility = View.GONE
+            super.onBackPressed()
+        } else {
+            homeRoot.visibility = View.VISIBLE
+            homeContainer.visibility = View.GONE
+            homeViewPager.setCurrentItem(1)
+        }
+
+
+
     }
 
     private fun setupAuthListener() {
