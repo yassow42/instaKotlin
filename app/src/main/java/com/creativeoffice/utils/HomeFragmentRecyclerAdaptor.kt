@@ -60,6 +60,7 @@ class HomeFragmentRecyclerAdaptor(var myContext: Context, var tumGonderiler: Arr
         var userName = tumLayout.tvKullaniciAdi
         var postAciklama = tumLayout.tvPostAciklama
         var postKacZaman = tumLayout.tvKacZamanOnce
+        var btnBegen = tumLayout.imgBegen
 
         var progresProfilFoto = tumLayout.pbUserProfile
         var progresPostFoto = tumLayout.pbPostFoto
@@ -96,6 +97,12 @@ class HomeFragmentRecyclerAdaptor(var myContext: Context, var tumGonderiler: Arr
                 transaction.addToBackStack("comment eklendi")
                 transaction.replace(R.id.homeContainer, CommentFragment())
                 transaction.commit()
+
+            }
+
+            btnBegen.setOnClickListener {
+
+                btnBegen.setImageResource(R.drawable.ic_begen_red)
 
             }
 

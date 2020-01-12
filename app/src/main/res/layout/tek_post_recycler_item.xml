@@ -3,9 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-
+    android:layout_height="250dp">
 
 
     <de.hdodenhof.circleimageview.CircleImageView
@@ -59,6 +57,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imgUserProfile"></com.creativeoffice.utils.GridImageView>
 
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="12 beğeni"
+        android:textColor="@color/siyah"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/imgBegen"
+        app:layout_constraintTop_toBottomOf="@+id/pbPostFoto" />
+
     <ImageView
         android:id="@+id/imgBegen"
         android:layout_width="28dp"
@@ -66,18 +75,8 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imgPostResim"
+        app:layout_constraintTop_toBottomOf="@+id/textView5"
         app:srcCompat="@drawable/ic_begen" />
-
-    <ImageView
-        android:id="@+id/imgGonder"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:layout_marginStart="14dp"
-        app:layout_constraintBottom_toBottomOf="@+id/imgYorum"
-        app:layout_constraintStart_toEndOf="@+id/imgYorum"
-        app:layout_constraintTop_toTopOf="@+id/imgYorum"
-        app:srcCompat="@drawable/ic_gonder" />
 
     <ImageView
         android:id="@+id/imgYorum"
@@ -88,6 +87,16 @@
         app:layout_constraintStart_toEndOf="@+id/imgBegen"
         app:layout_constraintTop_toTopOf="@+id/imgBegen"
         app:srcCompat="@drawable/ic_yorum" />
+
+    <ImageView
+        android:id="@+id/imgGonder"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="14dp"
+        app:layout_constraintBottom_toBottomOf="@+id/imgYorum"
+        app:layout_constraintStart_toEndOf="@+id/imgYorum"
+        app:layout_constraintTop_toTopOf="@+id/imgYorum"
+        app:srcCompat="@drawable/ic_gonder" />
 
     <TextView
         android:id="@+id/tvKullaniciAdi"
@@ -114,8 +123,8 @@
     <ProgressBar
         android:id="@+id/pbPostFoto"
         style="?android:attr/progressBarStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         app:layout_constraintBottom_toBottomOf="@+id/imgPostResim"
         app:layout_constraintEnd_toEndOf="@+id/imgPostResim"
         app:layout_constraintStart_toStartOf="@+id/imgPostResim"
@@ -132,4 +141,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/tvKullaniciAdi"
         app:layout_constraintTop_toBottomOf="@+id/tvKullaniciAdi" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
