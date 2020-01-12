@@ -2,7 +2,11 @@ package com.creativeoffice.Generic
 
 
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
+import android.text.Html
+import android.text.Spannable
+import android.text.Spanned
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -22,6 +26,7 @@ import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
+import kotlinx.android.synthetic.main.fragment_comment.*
 import kotlinx.android.synthetic.main.fragment_comment.view.*
 import kotlinx.android.synthetic.main.tek_yorum.view.*
 import org.greenrobot.eventbus.EventBus
@@ -38,10 +43,9 @@ class CommentFragment : Fragment() {
 
     lateinit var mAuth: FirebaseAuth
     lateinit var mUser: FirebaseUser
-
     lateinit var mRef: DatabaseReference
-
     lateinit var myAdapter: FirebaseRecyclerAdapter<Comments, CommentViewHolder>
+    lateinit var fragmentView: View
 
 
     override fun onCreateView(
@@ -49,14 +53,50 @@ class CommentFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        var view = inflater.inflate(R.layout.fragment_comment, container, false)
+        fragmentView = inflater.inflate(R.layout.fragment_comment, container, false)
 
-        mRef = FirebaseDatabase.getInstance().reference.child("comments").child(yorumYapilacakGonderiID!!)
         mAuth = FirebaseAuth.getInstance()
         mUser = mAuth.currentUser!!
 
 
-        val options = FirebaseRecyclerOptions.Builder<Comments>()!!
+        setupCommentsRecyclerView()
+        setupPaylasButton()
+        setupProfilPicture()
+        return fragmentView
+    }
+
+
+    private fun setupPaylasButton() {
+        fragmentView.tvBtnPaylas.setOnClickListener {
+
+            if (!etYorum.text.isNullOrEmpty()) {
+
+                var yeniYorum = hashMapOf<String, Any>("user_id" to mUser.uid, "yorum" to etYorum.text.toString(), "yorum_begeni" to "0", "yorum_tarih" to ServerValue.TIMESTAMP)
+
+                FirebaseDatabase.getInstance().reference.child("comments").child(yorumYapilacakGonderiID!!).push().setValue(yeniYorum)
+            }
+
+            etYorum.setText("")
+        }
+    }
+
+    private fun setupProfilPicture() {
+
+        FirebaseDatabase.getInstance().reference.child("users").child(mUser.uid).child("user_detail").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onCancelled(p0: DatabaseError) {
+
+            }
+
+            override fun onDataChange(p0: DataSnapshot) {
+                var kullaniciPfimg = p0!!.child("profile_picture").getValue().toString()
+                UniversalImageLoader.setImage(kullaniciPfimg!!, yorumCircleimg, yorumCirclePB)
+            }
+        })
+    }
+
+    private fun setupCommentsRecyclerView() {
+        mRef = FirebaseDatabase.getInstance().reference.child("comments").child(yorumYapilacakGonderiID!!)
+        val options = FirebaseRecyclerOptions.Builder<Comments>()
             .setQuery(mRef, Comments::class.java)
             .build()
 
@@ -65,6 +105,7 @@ class CommentFragment : Fragment() {
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentViewHolder {
 
                 var CommentviewHolder = LayoutInflater.from(activity).inflate(R.layout.tek_yorum, parent, false)
+
                 return CommentViewHolder(CommentviewHolder)
 
             }
@@ -77,13 +118,10 @@ class CommentFragment : Fragment() {
             }
         }
 
-        view.yorumlarRecyclerView.adapter = myAdapter
-        view.yorumlarRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
+        fragmentView!!.yorumlarRecyclerView.adapter = myAdapter
+        fragmentView!!.yorumlarRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
 
-
-        return view
     }
-
 
     class CommentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var tumCommentLayout = itemView as ConstraintLayout
@@ -106,10 +144,17 @@ class CommentFragment : Fragment() {
                 override fun onCancelled(p0: DatabaseError) {
 
                 }
-                override fun onDataChange(p0: DataSnapshot) {
-                    var userName = "<font color =#000>" + p0.getValue(Users::class.java)!!.user_name.toString() +"</font>"
 
-                    tvUserveAciklama.text = userName + " " + yorum
+                override fun onDataChange(p0: DataSnapshot) {
+                    var userName = "<font color =#000000>" + " " + p0.getValue(Users::class.java)!!.user_name.toString() + "</font>" + " " + yorum
+                    var sonuc: Spanned? = null
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+
+                        sonuc = Html.fromHtml(userName, Html.FROM_HTML_MODE_LEGACY)
+                    }
+
+
+                    tvUserveAciklama.text = sonuc
 
                     var imgUrl = p0!!.getValue(Users::class.java)!!.user_detail!!.profile_picture
                     UniversalImageLoader.setImage(imgUrl.toString(), profileImg, null)

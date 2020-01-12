@@ -89,7 +89,7 @@
         </de.hdodenhof.circleimageview.CircleImageView>
 
         <EditText
-            android:id="@+id/editText"
+            android:id="@+id/etYorum"
             android:layout_width="0dp"
             android:layout_height="35dp"
             android:layout_marginStart="16dp"
@@ -97,21 +97,21 @@
             android:hint="Yorum Ekle"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="@+id/yorumCircleimg"
-            app:layout_constraintEnd_toStartOf="@+id/textView5"
+            app:layout_constraintEnd_toStartOf="@+id/tvBtnPaylas"
             app:layout_constraintStart_toEndOf="@+id/yorumCircleimg"
             app:layout_constraintTop_toTopOf="@+id/yorumCircleimg"></EditText>
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/tvBtnPaylas"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:text="Paylaş"
             android:textColor="@color/mavi"
             android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="@+id/editText"
+            app:layout_constraintBottom_toBottomOf="@+id/etYorum"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/editText" />
+            app:layout_constraintTop_toTopOf="@+id/etYorum" />
 
 
         <View
@@ -120,7 +120,7 @@
             android:layout_height="1dp"
             android:layout_marginBottom="8dp"
             android:background="@color/golgelik"
-            app:layout_constraintBottom_toTopOf="@+id/editText"
+            app:layout_constraintBottom_toTopOf="@+id/etYorum"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"></View>
 
