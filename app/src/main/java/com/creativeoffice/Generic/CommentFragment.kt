@@ -5,7 +5,6 @@ import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.text.Html
-import android.text.Spannable
 import android.text.Spanned
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -58,6 +57,9 @@ class CommentFragment : Fragment() {
         mAuth = FirebaseAuth.getInstance()
         mUser = mAuth.currentUser!!
 
+        fragmentView.imgBack.setOnClickListener {
+            activity!!.onBackPressed()
+        }
 
         setupCommentsRecyclerView()
         setupPaylasButton()
@@ -100,20 +102,23 @@ class CommentFragment : Fragment() {
             .setQuery(mRef, Comments::class.java)
             .build()
 
-
         myAdapter = object : FirebaseRecyclerAdapter<Comments, CommentViewHolder>(options) {
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentViewHolder {
-
                 var CommentviewHolder = LayoutInflater.from(activity).inflate(R.layout.tek_yorum, parent, false)
-
                 return CommentViewHolder(CommentviewHolder)
-
             }
 
-            override fun onBindViewHolder(holder: CommentViewHolder, p1: Int, model: Comments) {
-
-
+            override fun onBindViewHolder(holder: CommentViewHolder, position: Int, model: Comments) {
                 holder.setData(model)
+
+                //Foto payaslılırken yorum kısmına atılan ve ilk yorum yerıne gecen kalp işsaretini kaldırıcam
+                // getRef(position).key //bu kod ile ilk yorum kısmının ref kısmını alıyourz
+                if (position == 0 && (yorumYapilacakGonderiID!!.equals(getRef(0).key))) {
+                    holder.yorumLike.visibility = View.INVISIBLE
+                }
+
+                holder.setBegenOlayi(yorumYapilacakGonderiID!!, getRef(position).key)
+                holder.setBegenDurumu(yorumYapilacakGonderiID!!, getRef(position).key)
 
             }
         }
@@ -128,14 +133,15 @@ class CommentFragment : Fragment() {
         var profileImg = tumCommentLayout.yorumYapanProfilPhoto
         var tvUserveAciklama = tumCommentLayout.tvUserAciklama
         var tvYorumZamani = tumCommentLayout.tvYorumZaman
-        var tvBegeniSayi = tumCommentLayout.tvBegeniSayi
+        var yorumBegenmeSayisi = tumCommentLayout.tvBegeniSayi
         var yorumLike = tumCommentLayout.imgYorumLike
 
         fun setData(oAnOlusturulanYorum: Comments) {
             tvYorumZamani.text = TimeAgo.getTimeAgoComments(oAnOlusturulanYorum.yorum_tarih!!.toLong())
-
-            tvBegeniSayi.text = "${oAnOlusturulanYorum.yorum_begeni} begeni"
+            yorumBegenmeSayisi.text = "${oAnOlusturulanYorum.yorum_begeni} begeni"
             kullaniciVerileriniGetir(oAnOlusturulanYorum.user_id, oAnOlusturulanYorum.yorum)
+
+
         }
 
         private fun kullaniciVerileriniGetir(userID: String?, yorum: String?) {
@@ -160,6 +166,51 @@ class CommentFragment : Fragment() {
                     UniversalImageLoader.setImage(imgUrl.toString(), profileImg, null)
                 }
             })
+        }
+
+        fun setBegenOlayi(yorumYapilacakGonderiID: String, begenilecekYorumID: String?) {
+            var mRef = FirebaseDatabase.getInstance().reference.child("comments").child(yorumYapilacakGonderiID).child(begenilecekYorumID!!)
+            yorumLike.setOnClickListener {
+                mRef.child("begenenler").addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onCancelled(p0: DatabaseError) {
+                    }
+
+                    override fun onDataChange(p0: DataSnapshot) {
+
+                        if (p0.hasChild(FirebaseAuth.getInstance().currentUser!!.uid)) {
+                            mRef.child("begenenler").child(FirebaseAuth.getInstance().currentUser!!.uid).removeValue()
+                            yorumLike.setImageResource(R.drawable.ic_begen_red)
+                        } else {
+                            mRef.child("begenenler").child(FirebaseAuth.getInstance().currentUser!!.uid).setValue(FirebaseAuth.getInstance().currentUser!!.uid)
+                            yorumLike.setImageResource(R.drawable.ic_begen)
+                        }
+                    }
+                })
+            }
+        }
+
+        fun setBegenDurumu(yorumYapilacakGonderiID: String, begenilecekYorumID: String?) {
+            var mRef = FirebaseDatabase.getInstance().reference.child("comments").child(yorumYapilacakGonderiID).child(begenilecekYorumID!!)
+            mRef.child("begenenler").addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onCancelled(p0: DatabaseError) {
+                }
+
+                override fun onDataChange(p0: DataSnapshot) {
+                    if (p0.exists()) { //begenenler dugumu altında value varsa devreye girer
+                        yorumBegenmeSayisi.visibility = View.VISIBLE
+                        yorumBegenmeSayisi.text = p0!!.childrenCount.toString()+" beğenme"
+                    } else {
+                        yorumBegenmeSayisi.visibility = View.INVISIBLE
+                    }
+
+                    if (p0.hasChild(FirebaseAuth.getInstance().currentUser!!.uid)) {
+                        yorumLike.setImageResource(R.drawable.ic_begen_red)
+                    } else {
+                        yorumLike.setImageResource(R.drawable.ic_begen)
+                    }
+                }
+            })
+
         }
     }
 
