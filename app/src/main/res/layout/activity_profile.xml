@@ -192,17 +192,18 @@
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:visibility="gone"
+            android:text="biyografi"
+            android:visibility="visible"
             app:layout_constraintStart_toStartOf="@+id/tvProfilGercekAdi"
             app:layout_constraintTop_toBottomOf="@+id/tvProfilGercekAdi" />
 
         <TextView
             android:id="@+id/tvWebSitesi"
-            android:layout_width="0dp"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="@+id/tvBiyografi"
+            android:text="www.com"
+            android:visibility="visible"
             app:layout_constraintStart_toStartOf="@+id/tvBiyografi"
             app:layout_constraintTop_toBottomOf="@+id/tvBiyografi" />
 

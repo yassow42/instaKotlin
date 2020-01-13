@@ -1,6 +1,10 @@
 package com.creativeoffice.utils
 
 import android.content.Context
+import android.os.Build
+import android.text.Html
+import android.text.Spanned
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -10,6 +14,11 @@ import com.creativeoffice.Generic.CommentFragment
 import com.creativeoffice.Home.HomeActivity
 import com.creativeoffice.Models.UserPost
 import com.creativeoffice.instakotlin.R
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.activity_home.*
 import kotlinx.android.synthetic.main.tek_post_recycler_item.view.*
 import org.greenrobot.eventbus.EventBus
@@ -19,7 +28,7 @@ import kotlin.collections.ArrayList
 
 class HomeFragmentRecyclerAdaptor(var myContext: Context, var tumGonderiler: ArrayList<UserPost>) : RecyclerView.Adapter<HomeFragmentRecyclerAdaptor.MyViewHolder>() {
 
-    init {//ilk cal?san
+    init {//ilk calisan
 
         Collections.sort(tumGonderiler, object : Comparator<UserPost> {
             override fun compare(o1: UserPost?, o2: UserPost?): Int {
@@ -57,21 +66,28 @@ class HomeFragmentRecyclerAdaptor(var myContext: Context, var tumGonderiler: Arr
         var profileImage = tumLayout.imgUserProfile
         var userNameTitle = tumLayout.tvKullaniciAdiBaslik
         var postImage = tumLayout.imgPostResim
-        var userName = tumLayout.tvKullaniciAdi
-        var postAciklama = tumLayout.tvPostAciklama
+        var userNameVeAciklama = tumLayout.tvKullaniciAdi
+
         var postKacZaman = tumLayout.tvKacZamanOnce
         var btnBegen = tumLayout.imgBegen
-
         var progresProfilFoto = tumLayout.pbUserProfile
         var progresPostFoto = tumLayout.pbPostFoto
-
         var yorumYap = tumLayout.imgYorum
+        var begeniSayisi = tumLayout.tvBegeniSayisi
+        var instaLike = tumLayout.insta_like_view
 
         fun setData(position: Int, oankiGonderi: UserPost, myContext: Context) {
 
             userNameTitle.text = oankiGonderi.userName
-            userName.text = oankiGonderi.userName
-            postAciklama.text = oankiGonderi.postAciklama
+            var userName = "<font color =#000>" + " "  + oankiGonderi.userName +"</font>"+ " " + oankiGonderi.postAciklama
+            var sonuc: Spanned? = null
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+
+                sonuc = Html.fromHtml(userName, Html.FROM_HTML_MODE_LEGACY)
+            }
+
+            userNameVeAciklama.text = sonuc
+
 
             var saat = TimeAgo.getTimeAgo(oankiGonderi.postYuklenmeTarihi!!)
             postKacZaman.text = saat
@@ -99,14 +115,83 @@ class HomeFragmentRecyclerAdaptor(var myContext: Context, var tumGonderiler: Arr
                 transaction.commit()
 
             }
-
             btnBegen.setOnClickListener {
 
-                btnBegen.setImageResource(R.drawable.ic_begen_red)
+                var mUserID = FirebaseAuth.getInstance().currentUser!!.uid
+                var mRef = FirebaseDatabase.getInstance().reference.child("likes").child(oankiGonderi.postID!!)
+                mRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onCancelled(p0: DatabaseError) {
 
+                    }
+
+                    override fun onDataChange(p0: DataSnapshot) {
+
+                        if (p0.hasChild(mUserID)) {
+                            btnBegen.setImageResource(R.drawable.ic_begen_red)
+                            mRef.child(mUserID).removeValue()
+
+                        } else {
+                            mRef.child(mUserID).setValue(mUserID)
+                            btnBegen.setImageResource(R.drawable.ic_begen)
+                        }
+                    }
+                })
             }
 
-        }
+            //fotograf begeni durumu.
+            FirebaseDatabase.getInstance().reference.child("likes").child(oankiGonderi.postID!!).addValueEventListener(object : ValueEventListener {
+                override fun onCancelled(p0: DatabaseError) {
+                }
 
+                override fun onDataChange(p0: DataSnapshot) {
+                    var mUserID = FirebaseAuth.getInstance().currentUser!!.uid
+                    if (p0.hasChild(mUserID)) {
+                        btnBegen.setImageResource(R.drawable.ic_begen_red)
+                    } else {
+                        btnBegen.setImageResource(R.drawable.ic_begen)
+                    }
+
+                    if (p0.exists()) {
+                        begeniSayisi.visibility = View.VISIBLE
+                        begeniSayisi.text = p0!!.childrenCount.toString() + "  begenen"
+                    } else {
+                        begeniSayisi.visibility = View.GONE
+
+                    }
+
+
+                }
+            })
+            ////////////////
+            ///?ift t?klama
+            var ilkTiklama: Long = 0
+            var sonTiklama: Long = 0
+            postImage.setOnClickListener {
+                ilkTiklama = sonTiklama
+                sonTiklama = System.currentTimeMillis()
+
+                if (sonTiklama - ilkTiklama < 300) {
+                    instaLike.start()
+                    sonTiklama = 0
+
+                    var mUserID = FirebaseAuth.getInstance().currentUser!!.uid
+                    var mRef = FirebaseDatabase.getInstance().reference.child("likes").child(oankiGonderi.postID!!)
+                    mRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onCancelled(p0: DatabaseError) {
+                        }
+                        override fun onDataChange(p0: DataSnapshot) {
+                            if (p0.hasChild(mUserID)) {
+                                btnBegen.setImageResource(R.drawable.ic_begen_red)
+                                mRef.child(mUserID).removeValue()
+                            } else {
+                                mRef.child(mUserID).setValue(mUserID)
+                                btnBegen.setImageResource(R.drawable.ic_begen)
+                            }
+                        }
+                    })
+                }
+            }
+            /////////?ift t?klama ////////////////
+        }
     }
 }
