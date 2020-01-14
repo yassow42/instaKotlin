@@ -4,29 +4,28 @@ import android.content.Context
 import android.os.Build
 import android.text.Html
 import android.text.Spanned
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.creativeoffice.Generic.CommentFragment
-import com.creativeoffice.Home.HomeActivity
 import com.creativeoffice.Models.UserPost
+import com.creativeoffice.Profile.ProfileActivity
 import com.creativeoffice.instakotlin.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import kotlinx.android.synthetic.main.activity_home.*
+import kotlinx.android.synthetic.main.activity_profile.*
 import kotlinx.android.synthetic.main.tek_post_recycler_item.view.*
 import org.greenrobot.eventbus.EventBus
 import java.util.*
 import kotlin.Comparator
 import kotlin.collections.ArrayList
 
-class HomeFragmentRecyclerAdaptor(var myContext: Context, var tumGonderiler: ArrayList<UserPost>) : RecyclerView.Adapter<HomeFragmentRecyclerAdaptor.MyViewHolder>() {
+class ProfilePostListRecyclerAdapter(var myContext: Context, var tumGonderiler: ArrayList<UserPost>) : RecyclerView.Adapter<ProfilePostListRecyclerAdapter.MyViewHolder>() {
 
     init {//ilk calisan
 
@@ -56,6 +55,7 @@ class HomeFragmentRecyclerAdaptor(var myContext: Context, var tumGonderiler: Arr
         holder.setData(position, tumGonderiler.get(position), myContext)
 
 
+
     }
 
     class MyViewHolder(itemView: View?, myContext: Context) : RecyclerView.ViewHolder(itemView!!) {
@@ -76,7 +76,7 @@ class HomeFragmentRecyclerAdaptor(var myContext: Context, var tumGonderiler: Arr
         var begeniSayisi = tumLayout.tvBegeniSayisi
         var instaLike = tumLayout.insta_like_view
 
-        fun setData(position: Int, oankiGonderi: UserPost, myContext: Context) {
+        fun setData(position: Int, oankiGonderi: UserPost, myProfileActivity: Context) {
 
             userNameTitle.text = oankiGonderi.userName
             var userName = "<font color =#000>" + " "  + oankiGonderi.userName +"</font>"+ " " + oankiGonderi.postAciklama
@@ -104,14 +104,15 @@ class HomeFragmentRecyclerAdaptor(var myContext: Context, var tumGonderiler: Arr
 
                 EventBus.getDefault().postSticky(EventbusDataEvents.YorumYapilacakGonderiIDYolla(oankiGonderi.postID))
 
-                myContext as HomeActivity
-                myContext.homeRoot.visibility = View.GONE
-                myContext.homeContainer.visibility = View.VISIBLE
+                myProfileActivity as ProfileActivity
+                myProfileActivity.bottomNaviContainer.visibility = View.GONE
+                myProfileActivity.profileRoot.visibility = View.GONE
+                myProfileActivity.profileContainer.visibility = View.VISIBLE
                 //geriye gelince kapal? kal?yordu homeactivity de tekrar actik.
 
-                var transaction = myContext.supportFragmentManager.beginTransaction()
+                var transaction = myProfileActivity.supportFragmentManager.beginTransaction()
                 transaction.addToBackStack("comment eklendi")
-                transaction.replace(R.id.homeContainer, CommentFragment())
+                transaction.replace(R.id.profileContainer, CommentFragment())
                 transaction.commit()
 
             }

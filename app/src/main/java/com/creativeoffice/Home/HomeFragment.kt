@@ -2,7 +2,6 @@ package com.creativeoffice.Home
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,14 +13,12 @@ import com.creativeoffice.Models.UserPost
 import com.creativeoffice.Models.Users
 import com.creativeoffice.instakotlin.R
 import com.creativeoffice.utils.BottomnavigationViewHelper
-import com.creativeoffice.utils.HomeFragmentRecyclerAdaptor
+import com.creativeoffice.utils.HomeFragmentRecyclerAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_home.*
-import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.fragment_home.view.*
-import kotlin.math.log
 
 class HomeFragment : Fragment() {
     lateinit var fragmentView: View
@@ -121,7 +118,7 @@ class HomeFragment : Fragment() {
     private fun setupRcyclerView() {
         var recyclerView = fragmentView.recyclerView
 
-        var recyclerAdapter = HomeFragmentRecyclerAdaptor(activity!!, tumGonderiler)
+        var recyclerAdapter = HomeFragmentRecyclerAdapter(activity!!, tumGonderiler)
         recyclerView.setHasFixedSize(true)
         recyclerView.adapter = recyclerAdapter
         recyclerView.layoutManager = LinearLayoutManager(activity!!, LinearLayoutManager.VERTICAL, false)
