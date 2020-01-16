@@ -22,4 +22,8 @@ class EventbusDataEvents {
 
     internal class YorumYapilacakGonderiIDYolla(var gonderiID: String?)
 
+
+    internal class kullaniciIDgonder(var kullaniciID: String?)
+
+
 }

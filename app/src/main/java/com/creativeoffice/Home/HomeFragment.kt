@@ -67,21 +67,18 @@ class HomeFragment : Fragment() {
             override fun onCancelled(p0: DatabaseError) {
 
             }
-
             override fun onDataChange(p0: DataSnapshot) {
                 var userID = kullaniciID
-                var kullaniciAdi = p0!!.getValue(Users::class.java)!!.user_name
-                var kullaniciFotoUrl = p0!!.getValue(Users::class.java)!!.user_detail!!.profile_picture
+                var kullaniciAdi = p0.getValue(Users::class.java)!!.user_name
+                var kullaniciFotoUrl = p0.getValue(Users::class.java)!!.user_detail!!.profile_picture
 
                 mRef.child("post").child(kullaniciID).addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onCancelled(p0: DatabaseError) {
 
                     }
-
                     override fun onDataChange(p0: DataSnapshot) {
 
                         if (p0.hasChildren()) {
-
 
                             for (ds in p0.children) {
                                 var eklenecekUserPost = UserPost() //boş contructer olusturdugumuz ıcın bu hata vermiyor.
@@ -94,25 +91,14 @@ class HomeFragment : Fragment() {
                                 eklenecekUserPost.postYuklenmeTarihi = ds.getValue(Posts::class.java)!!.yuklenme_tarihi
 
 
-
                                 tumGonderiler.add(eklenecekUserPost)
-
-
                             }
-
-
                         }
                         setupRcyclerView()
-
                     }
-
                 })
-
             }
-
         })
-
-
     }
 
     private fun setupRcyclerView() {

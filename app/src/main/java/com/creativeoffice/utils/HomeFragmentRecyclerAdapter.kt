@@ -93,10 +93,7 @@ class HomeFragmentRecyclerAdapter(var myContext: Context, var tumGonderiler: Arr
 
             UniversalImageLoader.setImage(oankiGonderi.userPhotoUrl!!, profileImage, progresProfilFoto)
 
-            UniversalImageLoader.setImage(
-                oankiGonderi.postUrl!!, postImage, progresPostFoto
-            )
-
+            UniversalImageLoader.setImage(oankiGonderi.postUrl!!, postImage, progresPostFoto)
 
 
             yorumYap.setOnClickListener {

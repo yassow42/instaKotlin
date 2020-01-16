@@ -103,6 +103,10 @@ class ShareNextFragment : Fragment() {
         mRef.child("post").child(mUser.uid).child(postID!!).setValue(yuklenenPost)
         mRef.child("post").child(mUser.uid).child(postID).child("yuklenme_tarihi").setValue(ServerValue.TIMESTAMP)
 
+        mRef.child("all_post").child(postID).setValue(yuklenenPost)
+        mRef.child("all_post").child(postID).child("yuklenme_tarihi").setValue(ServerValue.TIMESTAMP)
+
+
         //gönderi açıklamasını yorum dugumunu eklıyoruz.
         if (!etPostAciklama.text.toString().isNullOrEmpty()) {
 

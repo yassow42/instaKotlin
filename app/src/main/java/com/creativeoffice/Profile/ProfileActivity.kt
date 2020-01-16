@@ -234,8 +234,6 @@ class ProfileActivity : AppCompatActivity() {
 
             kullaniciPostListe.layoutManager = LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false)
         }
-
-
     }
 
 
