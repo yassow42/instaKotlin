@@ -36,11 +36,13 @@ class UserProfileActivity : AppCompatActivity() {
         setContentView(R.layout.activity_user_profile)
         setupNavigationView()
 
+        var hazirID = "eEoeHechmoYHH3nurJIQcjB7T213"
 
         tumGonderiler = ArrayList()
-        kullaniciBilgileriniGetir("eEoeHechmoYHH3nurJIQcjB7T213")
+        gelenID = intent.getStringExtra("arananKullaniciID")
+        kullaniciBilgileriniGetir(gelenID)
         kullaniciPostlariniGetir(gelenID)
-
+        setupToolbar()
         //ilk secilen her zaman imgGrid oldugundan rengi ilk basta mavı yaptık
         imgGrid.setColorFilter(ContextCompat.getColor(this, R.color.mavi), PorterDuff.Mode.SRC_IN)
         imgGrid.setOnClickListener {
@@ -55,10 +57,20 @@ class UserProfileActivity : AppCompatActivity() {
             setupRecyclerView(2)
         }
 
+
+
+    }
+
+    private fun setupToolbar() {
         tvTakipButton.setOnClickListener {
-            Log.e("hata", "dsadsa")
+
+
         }
 
+        imgBack.setOnClickListener {
+
+            onBackPressed()
+        }
     }
 
     private fun kullaniciBilgileriniGetir(gelenID: String) {
@@ -188,6 +200,8 @@ class UserProfileActivity : AppCompatActivity() {
         menuItem.setChecked(true)
     }
 
+
+    /*
     //////////////////////eventbuss//////////////////////////
     @Subscribe(sticky = true)
 
@@ -208,6 +222,6 @@ class UserProfileActivity : AppCompatActivity() {
         EventBus.getDefault().register(this)
 
     }
-
+*/
 
 }

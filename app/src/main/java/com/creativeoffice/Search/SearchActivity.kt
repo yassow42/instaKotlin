@@ -39,7 +39,7 @@ class SearchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
-        tumGonderilerr = ArrayList()
+     //   tumGonderilerr = ArrayList()
 
         setupNavigationView()
         setupRecyclerView()
@@ -49,9 +49,7 @@ class SearchActivity : AppCompatActivity() {
 
         btnAra.setOnClickListener {
             arananKullanici()
-            val intent = Intent(this,UserProfileActivity::class.java)
 
-           startActivity(intent)
 
         }
 
@@ -67,15 +65,16 @@ class SearchActivity : AppCompatActivity() {
 
                 for (users in p0.children) {
 
-                    tumKullanicilar = users.getValue(Users::class.java)!!
+                  var  tumKullanicilar = users.getValue(Users::class.java)!!
 
                     if (tumKullanicilar.user_name!!.equals(searchView.text.toString())) {
 
+                        var userID=tumKullanicilar.user_id!!
                         Log.e("userIDD", tumKullanicilar.user_id!!)
 
-                        EventBus.getDefault().postSticky(EventbusDataEvents.kullaniciIDgonder(tumKullanicilar.user_id))
+                     //   EventBus.getDefault().postSticky(EventbusDataEvents.kullaniciIDgonder(tumKullanicilar.user_id))
 
-                        userProfileGit()
+                        userProfileGit(userID)
 
                     }else{
                         Log.e("user","boyle bırı yok")
@@ -83,6 +82,15 @@ class SearchActivity : AppCompatActivity() {
 
                 }
 
+            }
+
+            private fun userProfileGit(userID: String) {
+
+                val intent = Intent(this@SearchActivity,UserProfileActivity::class.java)
+
+                intent.putExtra("arananKullaniciID",userID)
+
+                startActivity(intent)
             }
 
         })
@@ -127,8 +135,5 @@ class SearchActivity : AppCompatActivity() {
         menuItem.setChecked(true)
     }
 
-    override fun onResume() {
-       // arananKullanici()
-        super.onResume()
-    }
+
 }
