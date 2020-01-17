@@ -56,7 +56,7 @@ dependencies {
     implementation 'com.karumi:dexter:6.0.1'
     // silicompuressor foto kalıte dusurme
     implementation 'com.iceteck.silicompressorr:silicompressor:2.2.2'
-//cameraWiew 1,5,1
+//cameraWiew 1,5,1 den güncelleme
     implementation 'com.otaliastudios:cameraview:1.5.1'
 //foto begen
     implementation 'com.github.Kshitij-Jain:InstaLikeView:1.05'

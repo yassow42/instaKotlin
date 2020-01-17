@@ -17,18 +17,21 @@
         android:theme="@style/AppTheme">
         <activity android:name="com.creativeoffice.Generic.UserProfileActivity"></activity>
         <activity android:name="com.creativeoffice.Login.RegisterActivity" />
-        <activity android:name="com.creativeoffice.Login.LoginActivity"></activity>
+        <activity android:name="com.creativeoffice.Login.LoginActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
         <activity android:name="com.creativeoffice.Profile.ProfileSettingActivity" />
         <activity android:name="com.creativeoffice.Share.ShareActivity" />
         <activity android:name="com.creativeoffice.Search.SearchActivity" />
         <activity android:name="com.creativeoffice.Profile.ProfileActivity" />
         <activity android:name="com.creativeoffice.News.NewsActivity" />
         <activity android:name="com.creativeoffice.Home.HomeActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
     </application>
 

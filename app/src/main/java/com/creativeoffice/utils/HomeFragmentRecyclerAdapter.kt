@@ -53,7 +53,8 @@ class HomeFragmentRecyclerAdapter(var myContext: Context, var tumGonderiler: Arr
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.setData(position, tumGonderiler.get(position), myContext)
-
+        holder.yorumlariGoruntule(tumGonderiler.get(position))
+        holder.ciftTiklama(tumGonderiler.get(position))
 
     }
 
@@ -74,11 +75,14 @@ class HomeFragmentRecyclerAdapter(var myContext: Context, var tumGonderiler: Arr
         var yorumYap = tumLayout.imgYorum
         var begeniSayisi = tumLayout.tvBegeniSayisi
         var instaLike = tumLayout.insta_like_view
+        var yorumSayisi = tumLayout.tvYorumGoster
+
+
 
         fun setData(position: Int, oankiGonderi: UserPost, myContext: Context) {
 
             userNameTitle.text = oankiGonderi.userName
-            var userName = "<font color =#000>" + " "  + oankiGonderi.userName +"</font>"+ " " + oankiGonderi.postAciklama
+            var userName = "<font color =#000>" + " " + oankiGonderi.userName + "</font>" + " " + oankiGonderi.postAciklama
             var sonuc: Spanned? = null
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 
@@ -91,6 +95,7 @@ class HomeFragmentRecyclerAdapter(var myContext: Context, var tumGonderiler: Arr
             var saat = TimeAgo.getTimeAgo(oankiGonderi.postYuklenmeTarihi!!)
             postKacZaman.text = saat
 
+
             UniversalImageLoader.setImage(oankiGonderi.userPhotoUrl!!, profileImage, progresProfilFoto)
 
             UniversalImageLoader.setImage(oankiGonderi.postUrl!!, postImage, progresPostFoto)
@@ -98,19 +103,13 @@ class HomeFragmentRecyclerAdapter(var myContext: Context, var tumGonderiler: Arr
 
             yorumYap.setOnClickListener {
 
-                EventBus.getDefault().postSticky(EventbusDataEvents.YorumYapilacakGonderiIDYolla(oankiGonderi.postID))
-
-                myContext as HomeActivity
-                myContext.homeRoot.visibility = View.GONE
-                myContext.homeContainer.visibility = View.VISIBLE
-                //geriye gelince kapal? kal?yordu homeactivity de tekrar actik.
-
-                var transaction = myContext.supportFragmentManager.beginTransaction()
-                transaction.addToBackStack("comment eklendi")
-                transaction.replace(R.id.homeContainer, CommentFragment())
-                transaction.commit()
+               yorumYapmaBtn(oankiGonderi, myContext)
 
             }
+            yorumSayisi.setOnClickListener {
+                yorumYapmaBtn(oankiGonderi,myContext)
+            }
+
             btnBegen.setOnClickListener {
 
                 var mUserID = FirebaseAuth.getInstance().currentUser!!.uid
@@ -133,6 +132,8 @@ class HomeFragmentRecyclerAdapter(var myContext: Context, var tumGonderiler: Arr
                     }
                 })
             }
+
+
 
             //fotograf begeni durumu.
             FirebaseDatabase.getInstance().reference.child("likes").child(oankiGonderi.postID!!).addValueEventListener(object : ValueEventListener {
@@ -158,8 +159,40 @@ class HomeFragmentRecyclerAdapter(var myContext: Context, var tumGonderiler: Arr
 
                 }
             })
-            ////////////////
-            ///?ift t?klama
+           /////////Foto Begeni Durumu//////////
+
+        }
+
+        fun yorumlariGoruntule(oankiGonderi: UserPost) {
+
+            FirebaseDatabase.getInstance().reference.child("comments").child(oankiGonderi.postID!!).addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onCancelled(p0: DatabaseError) {
+
+                }
+
+                override fun onDataChange(p0: DataSnapshot) {
+                    if (p0.getValue() != null) {
+                        var yorumSayisii = p0.childrenCount
+                        if (yorumSayisii>1){
+                            yorumSayisi.text = p0.childrenCount.toString() + " yorumun tümünü gör"
+                            yorumSayisi.visibility = View.VISIBLE
+                        }else{
+                            yorumSayisi.visibility = View.GONE
+
+                        }
+
+
+                    } else {
+                        yorumSayisi.visibility = View.GONE
+                    }
+
+                }
+            }
+
+            )
+        }
+
+        fun ciftTiklama(oankiGonderi: UserPost) {
             var ilkTiklama: Long = 0
             var sonTiklama: Long = 0
             postImage.setOnClickListener {
@@ -175,6 +208,7 @@ class HomeFragmentRecyclerAdapter(var myContext: Context, var tumGonderiler: Arr
                     mRef.addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onCancelled(p0: DatabaseError) {
                         }
+
                         override fun onDataChange(p0: DataSnapshot) {
                             if (p0.hasChild(mUserID)) {
                                 btnBegen.setImageResource(R.drawable.ic_begen_red)
@@ -187,7 +221,23 @@ class HomeFragmentRecyclerAdapter(var myContext: Context, var tumGonderiler: Arr
                     })
                 }
             }
-            /////////?ift t?klama ////////////////
         }
+
+        fun yorumYapmaBtn(oankiGonderi: UserPost, myContext: Context) {
+
+            EventBus.getDefault().postSticky(EventbusDataEvents.YorumYapilacakGonderiIDYolla(oankiGonderi.postID))
+
+            myContext as HomeActivity
+            myContext.homeRoot.visibility = View.GONE
+            myContext.homeContainer.visibility = View.VISIBLE
+            //geriye gelince kapal? kal?yordu homeactivity de tekrar actik.
+
+            var transaction = myContext.supportFragmentManager.beginTransaction()
+            transaction.addToBackStack("comment eklendi")
+            transaction.replace(R.id.homeContainer, CommentFragment())
+            transaction.commit()
+        }
+
+
     }
 }

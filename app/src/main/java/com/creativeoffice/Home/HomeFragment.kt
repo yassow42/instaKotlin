@@ -2,6 +2,7 @@ package com.creativeoffice.Home
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,6 +26,7 @@ class HomeFragment : Fragment() {
     private val ACTIVITY_NO = 0
 
     lateinit var tumGonderiler: ArrayList<UserPost>
+    lateinit var tumTakipEttiklerim: ArrayList<String>
 
     lateinit var mAuth: FirebaseAuth
     lateinit var mUser: FirebaseUser
@@ -42,10 +44,13 @@ class HomeFragment : Fragment() {
         mAuth = FirebaseAuth.getInstance()
         mUser = mAuth.currentUser!!
         mRef = FirebaseDatabase.getInstance().reference
-
         tumGonderiler = ArrayList<UserPost>()
 
-        kullaniciPostlariniGetir(mUser.uid)
+
+        tumTakipEttiklerimiGetir()
+        tumTakipEttiklerim = ArrayList()
+        //tumTakipEttiklerim.add(mUser.uid)
+
 
         fragmentView.imgTabCamera.setOnClickListener {
 
@@ -61,49 +66,87 @@ class HomeFragment : Fragment() {
         return fragmentView
     }
 
-    private fun kullaniciPostlariniGetir(kullaniciID: String) {
-
-        mRef.child("users").child(kullaniciID).addListenerForSingleValueEvent(object : ValueEventListener {
+    private fun tumTakipEttiklerimiGetir() {
+        mRef.child("following").child(mUser.uid).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {
 
             }
+
             override fun onDataChange(p0: DataSnapshot) {
-                var userID = kullaniciID
-                var kullaniciAdi = p0.getValue(Users::class.java)!!.user_name
-                var kullaniciFotoUrl = p0.getValue(Users::class.java)!!.user_detail!!.profile_picture
 
-                mRef.child("post").child(kullaniciID).addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onCancelled(p0: DatabaseError) {
-
+                if (p0.getValue() != null) {
+                    for (ds in p0.children) {
+                        tumTakipEttiklerim.add(ds.key!!)
                     }
-                    override fun onDataChange(p0: DataSnapshot) {
+                     Log.e("takip ettikleri", "Tum takip ettiklerim" + tumTakipEttiklerim.toString())
+                    kullaniciPostlariniGetir()
 
-                        if (p0.hasChildren()) {
+                } else {
 
-                            for (ds in p0.children) {
-                                var eklenecekUserPost = UserPost() //boş contructer olusturdugumuz ıcın bu hata vermiyor.
-                                eklenecekUserPost.userID = userID
-                                eklenecekUserPost.userName = kullaniciAdi
-                                eklenecekUserPost.userPhotoUrl = kullaniciFotoUrl
-                                eklenecekUserPost.postID = ds.getValue(Posts::class.java)!!.post_id
-                                eklenecekUserPost.postUrl = ds.getValue(Posts::class.java)!!.file_url
-                                eklenecekUserPost.postAciklama = ds.getValue(Posts::class.java)!!.aciklama
-                                eklenecekUserPost.postYuklenmeTarihi = ds.getValue(Posts::class.java)!!.yuklenme_tarihi
+                }
 
-
-                                tumGonderiler.add(eklenecekUserPost)
-                            }
-                        }
-                        setupRcyclerView()
-                    }
-                })
             }
+
+
         })
+
+    }
+
+    private fun kullaniciPostlariniGetir() {
+
+        mRef = FirebaseDatabase.getInstance().reference
+        for (i in 0..tumTakipEttiklerim.size - 1) {
+            var kullaniciID = tumTakipEttiklerim.get(i)
+            mRef.child("users").child(kullaniciID).addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onCancelled(p0: DatabaseError) {
+
+                }
+
+                override fun onDataChange(p0: DataSnapshot) {
+                    var userID = kullaniciID
+                    var kullaniciAdi = p0.getValue(Users::class.java)!!.user_name
+                    var kullaniciFotoUrl = p0.getValue(Users::class.java)!!.user_detail!!.profile_picture
+
+                    mRef.child("post").child(kullaniciID).addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onCancelled(p0: DatabaseError) {
+
+                        }
+
+                        override fun onDataChange(p0: DataSnapshot) {
+
+                            if (p0.hasChildren()) {
+                                Log.e("takip ettiklerinin post", kullaniciID+"kişinin fotosu var")
+
+                                for (ds in p0.children) {
+                                    var eklenecekUserPost = UserPost() //boş contructer olusturdugumuz ıcın bu hata vermiyor.
+                                    eklenecekUserPost.userID = userID
+                                    eklenecekUserPost.userName = kullaniciAdi
+                                    eklenecekUserPost.userPhotoUrl = kullaniciFotoUrl
+                                    eklenecekUserPost.postID = ds.getValue(Posts::class.java)!!.post_id
+                                    eklenecekUserPost.postUrl = ds.getValue(Posts::class.java)!!.file_url
+                                    eklenecekUserPost.postAciklama = ds.getValue(Posts::class.java)!!.aciklama
+                                    eklenecekUserPost.postYuklenmeTarihi = ds.getValue(Posts::class.java)!!.yuklenme_tarihi
+
+
+                                    tumGonderiler.add(eklenecekUserPost)
+                                }
+                            }
+
+                            if (i>=tumTakipEttiklerim.size-1){
+                                setupRcyclerView()
+                            }
+
+                        }
+                    })
+                }
+            })
+        }
+
+
     }
 
     private fun setupRcyclerView() {
         var recyclerView = fragmentView.recyclerView
-
         var recyclerAdapter = HomeFragmentRecyclerAdapter(activity!!, tumGonderiler)
         recyclerView.setHasFixedSize(true)
         recyclerView.adapter = recyclerAdapter

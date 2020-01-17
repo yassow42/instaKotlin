@@ -24,9 +24,7 @@ import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ServerValue
+import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.OnProgressListener
 import com.google.firebase.storage.StorageReference
@@ -117,9 +115,30 @@ class ShareNextFragment : Fragment() {
 
         }
 
+        postSayisiniGuncelle()
+
         ///Burada artık paylas butonuna tıkladıktan sonra veritabanına bılgıler yazılıyordu. Yazma işlemi bittikten sonra
         var intent = Intent(activity!!, HomeActivity::class.java)
         startActivity(intent)
+
+    }
+
+    private fun postSayisiniGuncelle() {
+        mRef.child("users").child(mUser.uid).child("user_detail").addListenerForSingleValueEvent(object : ValueEventListener{
+            override fun onCancelled(p0: DatabaseError) {
+
+            }
+
+            override fun onDataChange(p0: DataSnapshot) {
+
+                var oankiGonderi= p0!!.child("post").getValue().toString().toInt()
+                oankiGonderi++
+                mRef.child("users").child(mUser.uid).child("user_detail").child("post").setValue(oankiGonderi.toString())
+
+            }
+
+        })
+
 
     }
 

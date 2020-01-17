@@ -40,7 +40,7 @@ class HomeActivity : AppCompatActivity() {
 
 
         mAuth = FirebaseAuth.getInstance()
-
+       // mAuth.signOut()
         setupAuthListener()
         setupHomeViewPager()
         initImageLoader()
@@ -166,7 +166,6 @@ class HomeActivity : AppCompatActivity() {
             homeContainer.visibility = View.GONE
             homeViewPager.setCurrentItem(1)
         }
-
 
 
     }
